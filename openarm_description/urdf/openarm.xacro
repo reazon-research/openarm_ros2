@@ -1,12 +1,12 @@
 <?xml version="1.0" ?>
 <robot name="openarm" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-<xacro:include filename="$(find openarm_description)/urdf/materials.xacro" />
-<xacro:include filename="$(find openarm_description)/urdf/openarm.trans" />
-<xacro:include filename="$(find openarm_description)/urdf/openarm.gazebo" />
-<link name="dummy"/>
-<joint name="dummy_joint" type="fixed">
-  <parent link="dummy"/>
+<xacro:include filename="materials.xacro" />
+<xacro:include filename="openarm.trans" />
+<xacro:include filename="openarm.gazebo" />
+<link name="world"/>
+<joint name="world_joint" type="fixed">
+  <parent link="world"/>
   <child link="base_link"/>
   <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
 </joint>
@@ -228,6 +228,7 @@
   <child link="J2_v1_1"/>
   <axis xyz="0.0 0.0 1.0"/>
   <limit upper="2.356194" lower="-2.356194" effort="100" velocity="1.0" acceleration="0.5"/>
+  <dynamics damping="1.0" friction="1.0"/>
 </joint>
 
 <joint name="rev2" type="revolute">
@@ -236,6 +237,7 @@
   <child link="J3_v1_1"/>
   <axis xyz="-1.0 -0.0 0.0"/>
   <limit upper="0.0" lower="-3.054326" effort="100" velocity="1.0" acceleration="0.5"/>
+  <dynamics damping="1.0" friction="1.0"/>
 </joint>
 
 <joint name="rev3" type="revolute">
@@ -244,6 +246,7 @@
   <child link="J4_v1_1"/>
   <axis xyz="-0.0 0.986291 0.165017"/>
   <limit upper="2.094395" lower="-2.094395" effort="100" velocity="1.0" acceleration="0.5"/>
+  <dynamics damping="1.0" friction="1.0"/>
 </joint>
 
 <joint name="rev4" type="revolute">
@@ -252,6 +255,7 @@
   <child link="J5_v1_1"/>
   <axis xyz="1.0 0.0 0.0"/>
   <limit upper="0.0" lower="-3.141593" effort="100" velocity="1.0" acceleration="0.5"/>
+  <dynamics damping="1.0" friction="1.0"/>
 </joint>
 
 <joint name="rev5" type="revolute">
@@ -260,6 +264,7 @@
   <child link="J6_v1_1"/>
   <axis xyz="0.0 -0.980588 0.196078"/>
   <limit upper="2.094395" lower="-2.094395" effort="100" velocity="1.0" acceleration="0.5"/>
+  <dynamics damping="1.0" friction="1.0"/>
 </joint>
 
 <joint name="rev6" type="revolute">
@@ -268,13 +273,16 @@
   <child link="J7_v1_1"/>
   <axis xyz="-1.0 0.0 -0.0"/>
   <limit upper="1.570796" lower="-1.570796" effort="100" velocity="1.0" acceleration="0.5"/>
+  <dynamics damping="1.0" friction="1.0"/>
 </joint>
 
-<joint name="rev7" type="continuous">
+<joint name="rev7" type="revolute">
   <origin xyz="-0.0355 0.00303 0.01515" rpy="0 0 0"/>
   <parent link="J7_v1_1"/>
   <child link="grip_attach_1"/>
   <axis xyz="0.0 0.196078 0.980588"/>
+  <limit upper="0.5" lower="-0.5" effort="100" velocity="1.0" acceleration="0.5"/>
+  <dynamics damping="1.0" friction="1.0"/>
 </joint>
 
 <joint name="slider_left" type="prismatic">
@@ -283,14 +291,17 @@
   <child link="left_jaw_1"/>
   <axis xyz="-1.0 0.0 -0.0"/>
   <limit upper="0.0" lower="-0.0455" effort="100" velocity="1.0" acceleration="0.5"/>
+  <dynamics damping="1.0" friction="1.0"/>
 </joint>
 
-<joint name="slider_left" type="prismatic">
+<joint name="slider_right" type="prismatic">
   <origin xyz="0.0775 -0.121655 0.012086" rpy="0 0 0"/>
   <parent link="grip_attach_1"/>
   <child link="right_jaw_1"/>
   <axis xyz="1.0 -0.0 0.0"/>
   <limit upper="0.0" lower="-0.0455" effort="100" velocity="1.0" acceleration="0.5"/>
+  <dynamics damping="1.0" friction="1.0"/>
+  <mimic joint="slider_left"/>
 </joint>
 
 </robot>

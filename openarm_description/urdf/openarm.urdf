@@ -98,7 +98,7 @@
     </actuator>
   </transmission>
   <gazebo>
-    <plugin filename="libgazebo_ros_control.so" name="control"/>
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin"/>
   </gazebo>
   <gazebo reference="base_link">
     <material>Gazebo/Silver</material>
@@ -161,9 +161,9 @@
     <mu2>0.2</mu2>
     <self_collide>true</self_collide>
   </gazebo>
-  <link name="dummy"/>
-  <joint name="dummy_joint" type="fixed">
-    <parent link="dummy"/>
+  <link name="world"/>
+  <joint name="world_joint" type="fixed">
+    <parent link="world"/>
     <child link="base_link"/>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </joint>
@@ -373,6 +373,7 @@
     <child link="J2_v1_1"/>
     <axis xyz="0.0 0.0 1.0"/>
     <limit acceleration="0.5" effort="100" lower="-2.356194" upper="2.356194" velocity="1.0"/>
+    <dynamics damping="1.0" friction="1.0"/>
   </joint>
   <joint name="rev2" type="revolute">
     <origin rpy="0 0 0" xyz="0.02975 -0.0 0.04475"/>
@@ -380,6 +381,7 @@
     <child link="J3_v1_1"/>
     <axis xyz="-1.0 -0.0 0.0"/>
     <limit acceleration="0.5" effort="100" lower="-3.054326" upper="0.0" velocity="1.0"/>
+    <dynamics damping="1.0" friction="1.0"/>
   </joint>
   <joint name="rev3" type="revolute">
     <origin rpy="0 0 0" xyz="-0.02975 0.06041 0.010107"/>
@@ -387,6 +389,7 @@
     <child link="J4_v1_1"/>
     <axis xyz="-0.0 0.986291 0.165017"/>
     <limit acceleration="0.5" effort="100" lower="-2.094395" upper="2.094395" velocity="1.0"/>
+    <dynamics damping="1.0" friction="1.0"/>
   </joint>
   <joint name="rev4" type="revolute">
     <origin rpy="0 0 0" xyz="0.029755 0.238436 0.039893"/>
@@ -394,6 +397,7 @@
     <child link="J5_v1_1"/>
     <axis xyz="1.0 0.0 0.0"/>
     <limit acceleration="0.5" effort="100" lower="-3.141593" upper="0.0" velocity="1.0"/>
+    <dynamics damping="1.0" friction="1.0"/>
   </joint>
   <joint name="rev5" type="revolute">
     <origin rpy="0 0 0" xyz="-0.029755 -0.13135 0.026265"/>
@@ -401,6 +405,7 @@
     <child link="J6_v1_1"/>
     <axis xyz="0.0 -0.980588 0.196078"/>
     <limit acceleration="0.5" effort="100" lower="-2.094395" upper="2.094395" velocity="1.0"/>
+    <dynamics damping="1.0" friction="1.0"/>
   </joint>
   <joint name="rev6" type="revolute">
     <origin rpy="0 0 0" xyz="0.0355 -0.1187 0.023735"/>
@@ -408,12 +413,15 @@
     <child link="J7_v1_1"/>
     <axis xyz="-1.0 0.0 -0.0"/>
     <limit acceleration="0.5" effort="100" lower="-1.570796" upper="1.570796" velocity="1.0"/>
+    <dynamics damping="1.0" friction="1.0"/>
   </joint>
-  <joint name="rev7" type="continuous">
+  <joint name="rev7" type="revolute">
     <origin rpy="0 0 0" xyz="-0.0355 0.00303 0.01515"/>
     <parent link="J7_v1_1"/>
     <child link="grip_attach_1"/>
     <axis xyz="0.0 0.196078 0.980588"/>
+    <limit acceleration="0.5" effort="100" lower="-1.5" upper="1.5" velocity="1.0"/>
+    <dynamics damping="1.0" friction="1.0"/>
   </joint>
   <joint name="slider_left" type="prismatic">
     <origin rpy="0 0 0" xyz="-0.0775 -0.121655 0.012086"/>
@@ -421,12 +429,15 @@
     <child link="left_jaw_1"/>
     <axis xyz="-1.0 0.0 -0.0"/>
     <limit acceleration="0.5" effort="100" lower="-0.0455" upper="0.0" velocity="1.0"/>
+    <dynamics damping="1.0" friction="1.0"/>
   </joint>
-  <joint name="slider_left" type="prismatic">
+  <joint name="slider_right" type="prismatic">
     <origin rpy="0 0 0" xyz="0.0775 -0.121655 0.012086"/>
     <parent link="grip_attach_1"/>
     <child link="right_jaw_1"/>
     <axis xyz="1.0 -0.0 0.0"/>
     <limit acceleration="0.5" effort="100" lower="-0.0455" upper="0.0" velocity="1.0"/>
+    <dynamics damping="1.0" friction="1.0"/>
+    <mimic joint="slider_left"/>
   </joint>
 </robot>
