@@ -1,0 +1,9 @@
+<library path="openarm_hardware">
+  <class name="openarm_hardware/OpenarmHW"
+         type="openarm_hardware::OpenarmHW"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ros2_control hardware interface.
+    </description>
+  </class>
+</library>
