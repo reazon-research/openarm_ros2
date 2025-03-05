@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="openarm_grip">
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="openarm">
     <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
 
-    <!-- Import openarm_grip urdf file -->
-    <xacro:include filename="$(find openarm_grip_description)/urdf/openarm_grip.urdf" />
+    <!-- Import openarm urdf file -->
+    <xacro:include filename="$(find openarm_description)/urdf/openarm.urdf" />
 
     <!-- Import control_xacro -->
-    <xacro:include filename="openarm_grip.ros2_control.xacro" />
+    <xacro:include filename="openarm.ros2_control.xacro" />
 
 
-    <xacro:openarm_grip_ros2_control name="FakeSystem" initial_positions_file="$(arg initial_positions_file)"/>
+    <xacro:openarm_ros2_control name="FakeSystem" initial_positions_file="$(arg initial_positions_file)"/>
 
 </robot>

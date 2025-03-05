@@ -4,7 +4,7 @@
   <name>openarm_moveit_config</name>
   <version>0.3.0</version>
   <description>
-     An automatically generated package with all the configuration and launch files for using the openarm_grip with the MoveIt Motion Planning Framework
+     An automatically generated package with all the configuration and launch files for using the openarm with the MoveIt Motion Planning Framework
   </description>
   <maintainer email="t95zhou@uwaterloo.ca">Thomason Zhou</maintainer>
 
@@ -36,7 +36,7 @@
   <exec_depend>moveit_ros_visualization</exec_depend>
   <exec_depend>moveit_ros_warehouse</exec_depend>
   <exec_depend>moveit_setup_assistant</exec_depend>
-  <exec_depend>openarm_grip_description</exec_depend>
+  <exec_depend>openarm_description</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>rviz2</exec_depend>
   <exec_depend>rviz_common</exec_depend>

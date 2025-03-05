@@ -12,9 +12,9 @@ def get_package_file(package, file_path):
     return absolute_file_path
 
 def generate_launch_description():
-    xacro_file = get_package_file('openarm_grip_description', 'urdf/openarm_grip.xacro')
+    xacro_file = get_package_file('openarm_description', 'urdf/openarm.xacro')
     urdf = xacro.process_file(xacro_file).toprettyxml(indent='  ')
-    rviz_config_file = get_package_file('openarm_grip_description', 'config/display.rviz')
+    rviz_config_file = get_package_file('openarm_description', 'config/display.rviz')
 
     return launch.LaunchDescription([
         launch_ros.actions.Node(

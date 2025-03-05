@@ -1,9 +1,9 @@
 moveit_setup_assistant_config:
   urdf:
-    package: openarm_grip_description
-    relative_path: urdf/openarm_grip.urdf
+    package: openarm_description
+    relative_path: urdf/openarm.urdf
   srdf:
-    relative_path: config/openarm_grip.srdf
+    relative_path: config/openarm.srdf
   package_settings:
     author_name: Thomason Zhou
     author_email: t95zhou@uwaterloo.ca

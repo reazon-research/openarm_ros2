@@ -1,6 +1,6 @@
 # ROS2 integration for OpenArm robots
 
-- openarm_grip_description: urdf with gripper actuator
+- openarm_description: urdf with gripper actuator
 - openarm_moveit_config: motion planning with [moveit2](https://github.com/moveit/moveit2)
 
 

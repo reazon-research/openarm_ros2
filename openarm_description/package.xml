@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-<name>openarm_grip_description</name>
+<name>openarm_description</name>
   <version>0.0.0</version>
-<description>The openarm_grip_description package</description>
+<description>The openarm_description package</description>
   <maintainer email="t95zhou@uwaterloo.ca">Thomason Zhou</maintainer>
   <license>BSD-3-Clause</license>
 

@@ -1,0 +1,20 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/thomason/ros2_ws/build/openarm_hardware_python",
+        "/home/thomason/ros2_ws/install/openarm_hardware_python/lib/python3.12/site-packages",
+        "/home/thomason/ros2_ws/build/openarm_description",
+        "/home/thomason/ros2_ws/install/openarm_description/lib/python3.12/site-packages",
+        "/home/thomason/ros2_ws/build/joy_tester",
+        "/home/thomason/ros2_ws/install/joy_tester/lib/python3.12/site-packages",
+        "/opt/ros/jazzy/lib/python3.12/site-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/thomason/ros2_ws/build/openarm_hardware_python",
+        "/home/thomason/ros2_ws/install/openarm_hardware_python/lib/python3.12/site-packages",
+        "/home/thomason/ros2_ws/build/openarm_description",
+        "/home/thomason/ros2_ws/install/openarm_description/lib/python3.12/site-packages",
+        "/home/thomason/ros2_ws/build/joy_tester",
+        "/home/thomason/ros2_ws/install/joy_tester/lib/python3.12/site-packages",
+        "/opt/ros/jazzy/lib/python3.12/site-packages"
+    ]
+}

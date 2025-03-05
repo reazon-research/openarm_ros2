@@ -1,4 +1,4 @@
-# Default initial positions for openarm_grip's ros2_control fake system
+# Default initial positions for openarm's ros2_control fake system
 
 initial_positions:
   slider_left: 0

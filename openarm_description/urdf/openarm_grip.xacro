@@ -1,9 +1,9 @@
 <?xml version="1.0" ?>
-<robot name="openarm_grip" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="openarm" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-<xacro:include filename="$(find openarm_grip_description)/urdf/materials.xacro" />
-<xacro:include filename="$(find openarm_grip_description)/urdf/openarm_grip.trans" />
-<xacro:include filename="$(find openarm_grip_description)/urdf/openarm_grip.gazebo" />
+<xacro:include filename="$(find openarm_description)/urdf/materials.xacro" />
+<xacro:include filename="$(find openarm_description)/urdf/openarm.trans" />
+<xacro:include filename="$(find openarm_description)/urdf/openarm.gazebo" />
 <link name="dummy"/>
 <joint name="dummy_joint" type="fixed">
   <parent link="dummy"/>
@@ -21,14 +21,14 @@
   <visual>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="silver"/>
   </visual>
   <collision>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -42,14 +42,14 @@
   <visual>
     <origin xyz="-0.0 -0.0 0.00225" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/J2_v1_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/J2_v1_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="silver"/>
   </visual>
   <collision>
     <origin xyz="-0.0 -0.0 0.00225" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/J2_v1_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/J2_v1_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -63,14 +63,14 @@
   <visual>
     <origin xyz="-0.02975 0.0 -0.0425" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/J3_v1_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/J3_v1_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="silver"/>
   </visual>
   <collision>
     <origin xyz="-0.02975 0.0 -0.0425" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/J3_v1_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/J3_v1_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -84,14 +84,14 @@
   <visual>
     <origin xyz="0.0 -0.06041 -0.052607" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/J4_v1_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/J4_v1_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="silver"/>
   </visual>
   <collision>
     <origin xyz="0.0 -0.06041 -0.052607" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/J4_v1_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/J4_v1_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -105,14 +105,14 @@
   <visual>
     <origin xyz="-0.029755 -0.298846 -0.0925" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/J5_v1_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/J5_v1_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="silver"/>
   </visual>
   <collision>
     <origin xyz="-0.029755 -0.298846 -0.0925" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/J5_v1_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/J5_v1_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -126,14 +126,14 @@
   <visual>
     <origin xyz="0.0 -0.167496 -0.118765" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/J6_v1_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/J6_v1_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="silver"/>
   </visual>
   <collision>
     <origin xyz="0.0 -0.167496 -0.118765" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/J6_v1_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/J6_v1_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -147,14 +147,14 @@
   <visual>
     <origin xyz="-0.0355 -0.048796 -0.1425" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/J7_v1_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/J7_v1_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="silver"/>
   </visual>
   <collision>
     <origin xyz="-0.0355 -0.048796 -0.1425" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/J7_v1_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/J7_v1_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -168,14 +168,14 @@
   <visual>
     <origin xyz="0.0 -0.051826 -0.15765" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/grip_attach_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/grip_attach_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="silver"/>
   </visual>
   <collision>
     <origin xyz="0.0 -0.051826 -0.15765" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/grip_attach_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/grip_attach_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -189,14 +189,14 @@
   <visual>
     <origin xyz="0.0775 0.069829 -0.169736" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/left_jaw_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/left_jaw_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="silver"/>
   </visual>
   <collision>
     <origin xyz="0.0775 0.069829 -0.169736" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/left_jaw_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/left_jaw_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -210,14 +210,14 @@
   <visual>
     <origin xyz="-0.0775 0.069829 -0.169736" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/right_jaw_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/right_jaw_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="silver"/>
   </visual>
   <collision>
     <origin xyz="-0.0775 0.069829 -0.169736" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://openarm_grip_description/meshes/right_jaw_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://openarm_description/meshes/right_jaw_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>

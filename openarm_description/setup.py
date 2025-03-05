@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 from glob import glob
 
-package_name = 'openarm_grip_description'
+package_name = 'openarm_description'
 
 setup(
     name=package_name,
