@@ -63,6 +63,7 @@ if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   find_package(ament_cmake_gmock REQUIRED)
   find_package(hardware_interface REQUIRED)
+  find_package(ros2_control_test_assets REQUIRED)
 
   ament_add_gmock(test_openarm_hardware
     test/test_openarm_hardware.cpp
@@ -72,6 +73,7 @@ if(BUILD_TESTING)
   )
   ament_target_dependencies(test_openarm_hardware
     hardware_interface
+    ros2_control_test_assets
   )
 
   set(ament_cmake_copyright_FOUND TRUE)
