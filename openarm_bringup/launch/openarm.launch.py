@@ -131,7 +131,7 @@ def generate_launch_description():
         [FindPackageShare(runtime_config_package), "config", controllers_file]
     )
     rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare(description_package), "rviz", "openarm.rviz"]
+        [FindPackageShare(description_package), "rviz", "robot_description.rviz"]
     )
 
     control_node = Node(

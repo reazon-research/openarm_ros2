@@ -15,16 +15,20 @@
 　limitations under the License.
 -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <xacro:macro name="openarm_ros2_control" params="name initial_positions_file prefix:='' can_device='can0'">
+    <xacro:macro name="openarm_ros2_control" params="name initial_positions_file prefix:='' can_device='can0' use_mock_hardware:=false mock_sensor_commands:=false">
         <xacro:property name="initial_positions" value="${xacro.load_yaml(initial_positions_file)['initial_positions']}"/>
 
         <ros2_control name="${prefix}${name}" type="system">
             <hardware>
-                <!-- By default, set up controllers for simulation. This won't work on real hardware -->
-                <!-- <plugin>mock_components/GenericSystem</plugin> -->
-                <plugin>openarm_hardware/OpenArmHW</plugin>
-                <param name="prefix">${prefix}</param>
-                <param name="can_device">${can_device}</param>
+                <xacro:if value="${use_mock_hardware}">
+                    <plugin>mock_components/GenericSystem</plugin>
+                    <param name="mock_sensor_commands">${mock_sensor_commands}</param>
+                </xacro:if>
+                <xacro:unless value="${use_mock_hardware}">
+                    <plugin>openarm_hardware/OpenArmHW</plugin>
+                    <param name="prefix">${prefix}</param>
+                    <param name="can_device">${can_device}</param>
+                </xacro:unless>
             </hardware>
             <joint name="${prefix}rev1">
                 <command_interface name="position"/>

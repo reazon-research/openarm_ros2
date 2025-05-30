@@ -23,7 +23,7 @@
         <color rgba="${50/255} ${50/255} ${50/255} 1.0"/>
     </material>
 
-    <xacro:macro name="openarm" params="side:='right' prefix:='' zero_pos='up' can_device='can0'">
+    <xacro:macro name="openarm" params="side:='right' prefix:='' zero_pos='up' can_device='can0' use_mock_hardware:=false mock_sensor_commands:=false">
         <!-- side right, left -->
         <!-- recommended prefixes left_, right_, etc. -->
         <!-- zero_pos up, arm -->
@@ -34,7 +34,7 @@
 
         <xacro:include filename="$(find openarm_description)/urdf/openarm.ros2_control.xacro" />
         <xacro:arg name="initial_positions_file" default="$(find openarm_description)/config/initial_positions.yaml" />
-        <xacro:openarm_ros2_control name="OpenArmHW" prefix="${prefix}" initial_positions_file="$(arg initial_positions_file)" can_device="${can_device}"/>
+        <xacro:openarm_ros2_control name="OpenArmHW" prefix="${prefix}" initial_positions_file="$(arg initial_positions_file)" can_device="${can_device}" use_mock_hardware="${use_mock_hardware}" mock_sensor_commands="${mock_sensor_commands}"/>
 
         <link name="${prefix}dummy_link"/>
 
