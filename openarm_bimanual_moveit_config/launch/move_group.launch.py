@@ -17,5 +17,6 @@ from moveit_configs_utils.launches import generate_move_group_launch
 
 
 def generate_launch_description():
-    moveit_config = MoveItConfigsBuilder("openarm_bimanual", package_name="openarm_bimanual_moveit_config").to_moveit_configs()
+    moveit_config = MoveItConfigsBuilder(
+        "openarm_bimanual", package_name="openarm_bimanual_moveit_config").to_moveit_configs()
     return generate_move_group_launch(moveit_config)

@@ -37,7 +37,8 @@ def generate_launch_description():
     )
 
     use_sim_time = LaunchConfiguration("use_sim_time")
-    use_sim_time_launch_arg = DeclareLaunchArgument(name="use_sim_time", default_value="false")
+    use_sim_time_launch_arg = DeclareLaunchArgument(
+        name="use_sim_time", default_value="false")
 
     robot_state_publisher_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -54,14 +55,16 @@ def generate_launch_description():
         launch_arguments=dict(use_sim_time=use_sim_time).items(),
     )
 
-    robot_description_content = Command(["xacro ", LaunchConfiguration("model")])
+    robot_description_content = Command(
+        ["xacro ", LaunchConfiguration("model")])
 
     robot_description_param = {
         "robot_description": ParameterValue(robot_description_content, value_type=str)
     }
 
     controller_params = PathJoinSubstitution(
-        [FindPackageShare(package="openarm_bimanual_bringup"), "config", "controllers.yaml"]
+        [FindPackageShare(package="openarm_bimanual_bringup"),
+         "config", "controllers.yaml"]
     )
 
     controller_manager = Node(
@@ -70,7 +73,8 @@ def generate_launch_description():
         parameters=[controller_params, robot_description_param],
     )
 
-    delayed_controller_manager = TimerAction(period=3.0, actions=[controller_manager])
+    delayed_controller_manager = TimerAction(
+        period=3.0, actions=[controller_manager])
 
     joint_broadcaster_spawner = Node(
         package="controller_manager",

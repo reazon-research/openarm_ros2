@@ -17,3 +17,13 @@ repos:
     rev: "v20.1.4"
     hooks:
       - id: clang-format
+  - repo: https://github.com/hhatto/autopep8
+    rev: v2.3.2
+    hooks:
+      - id: autopep8
+        name: Python Format
+        alias: python-format
+        args:
+          - "--in-place"
+        types:
+          - python

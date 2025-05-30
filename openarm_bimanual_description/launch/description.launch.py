@@ -32,7 +32,8 @@ def generate_launch_description():
     default_model_path = pkg_share / "urdf/openarm_bimanual.urdf.xacro"
 
     use_sim_time = LaunchConfiguration("use_sim_time")
-    use_sim_time_launch_arg = DeclareLaunchArgument("use_sim_time", default_value="true")
+    use_sim_time_launch_arg = DeclareLaunchArgument(
+        "use_sim_time", default_value="true")
 
     robot_state_publisher_node = launch_ros.actions.Node(
         package="robot_state_publisher",
