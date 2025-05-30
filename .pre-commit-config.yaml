@@ -21,9 +21,3 @@ repos:
     rev: v2.3.2
     hooks:
       - id: autopep8
-        name: Python Format
-        alias: python-format
-        args:
-          - "--in-place"
-        types:
-          - python
