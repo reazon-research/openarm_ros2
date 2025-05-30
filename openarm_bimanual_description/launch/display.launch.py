@@ -53,7 +53,8 @@ def generate_launch_description():
         package="joint_state_publisher",
         executable="joint_state_publisher",
         name="joint_state_publisher",
-        condition=launch.conditions.UnlessCondition(LaunchConfiguration("gui")),
+        condition=launch.conditions.UnlessCondition(
+            LaunchConfiguration("gui")),
         parameters=[
             {
                 "use_sim_time": use_sim_time,

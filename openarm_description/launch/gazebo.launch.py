@@ -36,7 +36,8 @@ def generate_launch_description():
 
     # Make path to resources dir without last package_name fragment.
     path_to_share_dir_clipped = "".join(
-        get_package_share_directory(resources_package).rsplit("/" + resources_package, 1)
+        get_package_share_directory(resources_package).rsplit(
+            "/" + resources_package, 1)
     )
 
     # Gazebo hint for resources.
@@ -55,9 +56,11 @@ def generate_launch_description():
             os.environ["SDF_PATH"] = gz_sim_resource_path
 
     use_custom_world = LaunchConfiguration("use_custom_world")
-    use_custom_world_launch_arg = DeclareLaunchArgument("use_custom_world", default_value="true")
+    use_custom_world_launch_arg = DeclareLaunchArgument(
+        "use_custom_world", default_value="true")
     gazebo_world = LaunchConfiguration("gazebo_world")
-    gazebo_world_launch_arg = DeclareLaunchArgument("gazebo_world", default_value="empty.sdf")
+    gazebo_world_launch_arg = DeclareLaunchArgument(
+        "gazebo_world", default_value="empty.sdf")
 
     # prepare custom world
     world = os.getenv("GZ_SIM_WORLD", "empty")
@@ -100,7 +103,8 @@ def generate_launch_description():
     )
 
     use_sim_time = LaunchConfiguration("use_sim_time")
-    use_sim_time_launch_arg = DeclareLaunchArgument("use_sim_time", default_value="true")
+    use_sim_time_launch_arg = DeclareLaunchArgument(
+        "use_sim_time", default_value="true")
     use_rviz = LaunchConfiguration("use_rviz")
     use_rviz_arg = DeclareLaunchArgument("use_rviz", default_value="true")
 

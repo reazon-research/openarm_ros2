@@ -32,20 +32,21 @@ def generate_launch_description():
     default_model_path = pkg_share / "urdf/openarm.urdf.xacro"
 
     model_arg = launch.actions.DeclareLaunchArgument(
-                name="model",
-                default_value=str(default_model_path),
-                description="Absolute path to the robot's URDF file",
-            )
+        name="model",
+        default_value=str(default_model_path),
+        description="Absolute path to the robot's URDF file",
+    )
     side_arg = DeclareLaunchArgument(
         name="side", default_value="right",  # Use "left" to test left arm.
         description="Select arm side: 'left' or 'right'"
     )
     zero_pos_arg = DeclareLaunchArgument(
-        name="zero_pos", default_value="up",  # Use "arm" to test alternative configuration.
+        # Use "arm" to test alternative configuration.
+        name="zero_pos", default_value="up",
         description="Specify zero position: 'up' or 'arm'"
     )
     prefix_arg = DeclareLaunchArgument(
-        name="prefix", default_value="",  
+        name="prefix", default_value="",
         description="Prefix for link and joint names (e.g., left_, right_)"
     )
     can_device_arg = DeclareLaunchArgument(
@@ -54,7 +55,8 @@ def generate_launch_description():
     )
 
     use_sim_time = LaunchConfiguration("use_sim_time")
-    use_sim_time_launch_arg = DeclareLaunchArgument("use_sim_time", default_value="true")
+    use_sim_time_launch_arg = DeclareLaunchArgument(
+        "use_sim_time", default_value="true")
 
     robot_description_command = Command([
         "xacro ", LaunchConfiguration("model"),
