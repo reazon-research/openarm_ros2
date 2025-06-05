@@ -15,11 +15,23 @@
 　limitations under the License.
 -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="openarm">
+    <!-- Robot description parameters -->
     <xacro:arg name="prefix" default="" />
+    <xacro:arg name="side" default="right" />
+    <xacro:arg name="zero_pos" default="up" />
+    
+    <!-- Control-related parameters -->
+    <xacro:arg name="can_device" default="can0" />
     <xacro:arg name="use_mock_hardware" default="false" />
     <xacro:arg name="mock_sensor_commands" default="false" />
+
+    <!-- Include robot description (without control parameters) -->
+    <xacro:include filename="openarm.robot.xacro"/>
+    <xacro:openarm_robot prefix="$(arg prefix)" side="$(arg side)" zero_pos="$(arg zero_pos)"/>
     
-    <xacro:include filename="openarm.xacro"/>
-    <xacro:openarm prefix="$(arg prefix)" use_mock_hardware="$(arg use_mock_hardware)" mock_sensor_commands="$(arg mock_sensor_commands)"/>
-    <xacro:include filename="$(find openarm_description)/urdf/openarm_sensors.xacro"/>
+    <!-- Include control configuration (with only control parameters) -->
+    <xacro:include filename="$(find openarm_description)/urdf/openarm.ros2_control.xacro"/>
+    <xacro:arg name="initial_positions_file" default="$(find openarm_description)/config/initial_positions.yaml" />
+    <xacro:openarm_ros2_control name="OpenArmHW" prefix="$(arg prefix)" initial_positions_file="$(arg initial_positions_file)" can_device="$(arg can_device)" use_mock_hardware="$(arg use_mock_hardware)" mock_sensor_commands="$(arg mock_sensor_commands)"/>
+    
 </robot>

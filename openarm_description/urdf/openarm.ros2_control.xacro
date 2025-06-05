@@ -92,12 +92,6 @@
                 <state_interface name="velocity"/>
             </joint>
 
-            <!-- <joint name="${prefix}right_pris2">
-                <state_interface name="position">
-                  <param name="initial_value">${initial_positions['right_pris2']}</param>
-                </state_interface>
-            </joint> -->
-
         </ros2_control>
     </xacro:macro>
 </robot>

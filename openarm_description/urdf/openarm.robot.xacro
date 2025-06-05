@@ -1,0 +1,312 @@
+<?xml version="1.0" ?>
+<!--
+　Copyright 2025 Reazon Holdings, Inc.
+
+　Licensed under the Apache License, Version 2.0 (the "License");
+　you may not use this file except in compliance with the License.
+　You may obtain a copy of the License at
+
+　    http://www.apache.org/licenses/LICENSE-2.0
+
+　Unless required by applicable law or agreed to in writing, software
+　distributed under the License is distributed on an "AS IS" BASIS,
+　WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+　See the License for the specific language governing permissions and
+　limitations under the License.
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <material name="gray">
+        <color rgba="${105/255} ${105/255} ${105/255} 1.0"/>
+    </material>
+    <material name="dark_gray">
+        <color rgba="${50/255} ${50/255} ${50/255} 1.0"/>
+    </material>
+
+    <xacro:macro name="openarm_robot" params="side:='right' prefix:='' zero_pos='up'">
+        <!-- side right, left -->
+        <!-- recommended prefixes left_, right_, etc. -->
+        <!-- zero_pos up, arm -->
+
+        <xacro:property name="reflect" value="${1 if side=='right' else -1}"/>
+        <xacro:property name="rotate" value="${0 if side=='right' else pi}"/>
+
+        <link name="${prefix}dummy_link"/>
+
+        <joint name="${prefix}dummy_joint" type="fixed">
+            <parent link="${prefix}dummy_link"/>
+            <child link="${prefix}link1"/>
+        </joint>
+
+        <link name="${prefix}link1">
+            <visual>
+                <origin rpy="0 0 0" xyz="0.0 0.0 -0.0007"/>
+                <geometry>
+                    <mesh filename="package://openarm_description/meshes/link1.stl"/>
+                </geometry>
+                <material name="gray"/>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0.0 0.0 0.0289"/>
+                <geometry>
+                    <box size="0.11 0.073 0.0592"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="0.5769283920617254"/>
+                <origin rpy="0 0 0" xyz="0.0 2.52845e-05 0.0229621"/>
+                <inertia ixx="0.00034035167574060775" ixy="-2.623557985991217e-18" ixz="-6.093726095527621e-18" iyy="0.0004300058300010205" iyz="-5.09829482074806e-07" izz="0.0004802171432001996"/>
+            </inertial>
+        </link>
+        <link name="${prefix}link2">
+            <visual>
+                <origin rpy="0 0 0" xyz="0.0 0.0 -0.05395"/>
+                <geometry>
+                    <mesh filename="package://openarm_description/meshes/link2.stl"/>
+                </geometry>
+                <material name="gray"/>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0.0 0.0 0.0371236"/>
+                <geometry>
+                    <box size="0.0590000000149012 0.08200000000000002 0.0742471498637348"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="0.16257504134917358"/>
+                <origin rpy="0 0 0" xyz="-0.000225878 -0.00183836 0.0278368"/>
+                <inertia ixx="0.00023903110213294374" ixy="-7.551692921096027e-08" ixz="-1.1282723362433474e-06" iyy="0.00010490798314778774" iyz="5.9079627839725245e-06" izz="0.00019737368685935776"/>
+            </inertial>
+        </link>
+        <link name="${prefix}link3">
+            <visual>
+                <origin rpy="${pi * 0.5} 0 0" xyz="0.0 0.0987 0.02975"/>
+                <geometry>
+                    <mesh filename="package://openarm_description/meshes/link3.stl"/>
+                </geometry>
+                <material name="gray"/>
+            </visual>
+            <collision>
+                <origin rpy="${pi * 0.5} 0 0" xyz="-0.0164466 -0.00045542 0.02975"/>
+                <geometry>
+                    <box size="0.08989101803441879 0.06999999999999983 0.05903276947803012"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="0.4201676469910031"/>
+                <origin rpy="${pi * 0.5} 0 0" xyz="-0.00688022 0.0 0.0282752"/>
+                <inertia ixx="0.00020256001126230057" ixy="6.004247875311213e-06" ixz="1.3304903057525575e-06" iyy="0.0002970624991387495" iyz="5.980157765704868e-07" izz="0.00032889994351244413"/>
+            </inertial>
+        </link>
+        <link name="${prefix}link4">
+            <visual>
+                <origin rpy="${pi} -1.5620381439005742 0" xyz="-0.0986962 0.0 0.0621144"/>
+                <geometry>
+                    <mesh filename="package://openarm_description/meshes/link4.stl"/>
+                </geometry>
+                <material name="gray"/>
+            </visual>
+            <collision>
+                <origin rpy="${pi} -1.5620381439005742 0" xyz="0.000266276 -0.0125642 -0.132604"/>
+                <geometry>
+                    <box size="0.27584673777150337 0.08211429171582063 0.07186573179325861"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="0.819475539373447"/>
+                <origin rpy="${pi} -1.5620381439005742 0" xyz="0.000781326 -0.0019461 -0.132411"/>
+                <inertia ixx="0.00044078452033976287" ixy="6.020023694043618e-05" ixz="0.00014637459261941218" iyy="0.009208791480530413" iyz="1.5469710436444469e-06" izz="0.009170539316023695"/>
+            </inertial>
+        </link>
+        <link name="${prefix}link5">
+            <visual>
+                <origin rpy="0 -0.008758182894317394 0" xyz="0.303864 0.0 -0.128451"/>
+                <geometry>
+                    <mesh filename="package://openarm_description/meshes/link5.stl"/>
+                </geometry>
+                <material name="gray"/>
+            </visual>
+            <collision>
+                <origin rpy="0 -0.008758182894316818 0" xyz="-0.0542814 0.00265291 -0.0302022"/>
+                <geometry>
+                    <box size="0.16827213220625828 0.06430555048399171 0.08257859967140947"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="0.4086748254352304"/>
+                <origin rpy="0 -0.008758182894316905 0" xyz="-0.0831891 0.00251789 -0.0290107"/>
+                <inertia ixx="0.00031417157425298747" ixy="-1.1391566029536723e-05" ixz="-1.883474090056124e-05" iyy="0.001221711435313989" iyz="1.46725418421127e-06" izz="0.0010755135067660488"/>
+            </inertial>
+        </link>
+        <link name="${prefix}link6">
+            <visual>
+                <origin rpy="${-2.1276679791326423*reflect + rotate} ${reflect* -1.5542266826921929} ${rotate}" xyz="${reflect*-0.0485412 + (0 if side=='right' else 0.012)} ${reflect*-0.0860404 +(0 if side=='right' else 0.0018)} ${0.437784- (0 if side=='right' else 0.0023)}"/>
+                <geometry>
+                    <mesh filename="package://openarm_description/meshes/${'link6_rightarm.stl' if side=='right' else 'link6_leftarm.stl'}"/>
+                </geometry>
+                <material name="gray"/>
+            </visual>
+            <collision>
+                <origin rpy="-2.127667979132636 -1.5542266826921927 0" xyz="-0.00260794 -0.00312921 -0.0652641"/>
+                <geometry>
+                    <box size="0.13114353004704765 0.05953478325301745 0.08817196195081879"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="0.3448471958049249"/>
+                <origin rpy="-2.127667979132636 -1.5542266826921927 0" xyz="-0.00898536 -0.0135065 -0.0438611"/>
+                <inertia ixx="0.00019355980999748924" ixy="-1.0061665815148114e-06" ixz="-3.9096495715032716e-05" iyy="0.0003486912031865755" iyz="6.088060315273385e-06" izz="0.00028774975153756256"/>
+            </inertial>
+        </link>
+        <link name="${prefix}link7">
+            <visual>
+                <origin rpy="0 ${reflect*-0.008758182894510852 + rotate} 0" xyz="0.558839 ${reflect*-0.00358671 + (0 if side=='right' else -0.007)} ${reflect*-0.0631962 + (0 if side=='right' else 0.071)}"/>
+                <geometry>
+                    <mesh filename="package://openarm_description/meshes/${'link7_rightarm.stl' if side=='right' else 'link7_leftarm.stl'}"/>
+                </geometry>
+                <material name="gray"/>
+            </visual>
+            <collision>
+                <origin rpy="0 -0.008758182894511114 0" xyz="-0.000318103 0.0022839 0.0340014"/>
+                <geometry>
+                    <box size="0.058327402175132874 0.04432916698753661 0.08267601622411752"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="0.2782138078738053"/>
+                <origin rpy="0 -0.008758182894511043 0" xyz="5.99432e-05 0.0041433 0.0354274"/>
+                <inertia ixx="0.00010424153315648891" ixy="2.735265831785291e-07" ixz="-1.0662322382945994e-07" iyy="0.00012313550743283462" iyz="-8.604996754782856e-08" izz="9.221319958512582e-05"/>
+            </inertial>
+        </link>
+        <link name="${prefix}link8">
+            <visual>
+                <origin rpy="1.5709195259578714 -0.014065461951077267 0" xyz="0.557948 0.103587 0.019724"/>
+                <geometry>
+                    <mesh filename="package://openarm_description/meshes/link8.stl"/>
+                </geometry>
+                <material name="gray"/>
+            </visual>
+            <collision>
+                <origin rpy="1.5709195259578714 -0.01406546195107726 0" xyz="-0.042694 -0.000543176 0.0110286"/>
+                <geometry>
+                    <box size="0.13038799671743653 0.05180887692688926 0.1601236763440867"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="0.31261452743802165"/>
+                <origin rpy="1.5709195259578714 -0.01406546195107726 0" xyz="-0.0607602 -0.000341696 0.00876618"/>
+                <inertia ixx="0.00023465661366788053" ixy="7.609048882006294e-05" ixz="3.088694121124684e-07" iyy="0.0005065459365215377" iyz="1.9022818028658623e-07" izz="0.0003737029250058136"/>
+            </inertial>
+        </link>
+        <link name="${prefix}gripper_center"/>
+        <link name="${prefix}link_left_jaw">
+            <visual>
+                <origin rpy="0 -0.008758182894469432 0" xyz="0.665265 -0.00286677 -0.0209282"/>
+                <geometry>
+                    <mesh filename="package://openarm_description/meshes/left_jaw.stl"/>
+                </geometry>
+                <material name="gray"/>
+            </visual>
+            <collision>
+                <origin rpy="0 -0.0087581828944695 0" xyz="0.665265 -0.00286677 -0.0209282"/>
+                <geometry>
+                    <mesh filename="package://openarm_description/meshes/left_jaw.stl"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="0.04297897856394934"/>
+                <origin rpy="0 -0.008758182894469429 0" xyz="-0.0187138 0.00217075 0.0159499"/>
+                <inertia ixx="1.1771768742932353e-05" ixy="-2.389928166589898e-06" ixz="3.999292204534159e-06" iyy="2.3837354480794824e-05" iyz="3.494431877242991e-07" izz="3.0474590214086944e-05"/>
+            </inertial>
+        </link>
+        <link name="${prefix}link_right_jaw">
+            <visual>
+                <origin rpy="0 -0.008758182898001485 0" xyz="0.665265 -0.00286677 -0.175928"/>
+                <geometry>
+                    <mesh filename="package://openarm_description/meshes/right_jaw.stl"/>
+                </geometry>
+                <material name="gray"/>
+            </visual>
+            <collision>
+                <origin rpy="0 -0.008758182898001553 0" xyz="0.665265 -0.00286677 -0.175928"/>
+                <geometry>
+                    <mesh filename="package://openarm_description/meshes/right_jaw.stl"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="0.042981665301134515"/>
+                <origin rpy="0 -0.00875818289800148 0" xyz="-0.0187844 -0.00272415 -0.0159503"/>
+                <inertia ixx="1.1561293087621594e-05" ixy="2.537718468008212e-06" ixz="-3.6591812257702003e-06" iyy="2.370165527871047e-05" iyz="4.848038235889027e-07" izz="3.039652946542647e-05"/>
+            </inertial>
+        </link>
+        <joint name="${prefix}rev1" type="revolute">
+            <parent link="${prefix}link1"/>
+            <child link="${prefix}link2"/>
+            <origin rpy="0 0 0" xyz="0.0 0.0 0.05325"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="0.0" lower="${-pi/4.0 if side=='right' and zero_pos=='arm' else -2.0943951023931953}" upper="${pi/4.0 if side=='left' and zero_pos=='arm' else 2.0943951023931953}" velocity="0.0"/>
+        </joint>
+        <joint name="${prefix}rev2" type="revolute">
+            <parent link="${prefix}link2"/>
+            <child link="${prefix}link3"/>
+            <origin rpy="-1.5707963267948968 ${pi/2 if zero_pos=='up' else 0.0} 0.0" xyz="0.0 -0.02975 0.04475"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="0.0" lower="${-pi/2.0 if zero_pos=='up' else -pi/18.0}" upper="${pi/2 if zero_pos=='up' else pi * 17.0 / 18.0}" velocity="0.0"/>
+        </joint>
+        <joint name="${prefix}rev3" type="revolute">
+            <parent link="${prefix}link3"/>
+            <child link="${prefix}link4"/>
+            <origin rpy="-1.5707963267949054 ${rotate} -1.562038143900564" xyz="-0.0612477 -0.000536432 0.02975"/>
+            <axis xyz="0 0 -1"/>
+            <limit effort="0.0" lower="${-pi * 2.0 / 3.0}" upper="${pi * 2.0 / 3.0}" velocity="0.0"/>
+        </joint>
+        <joint name="${prefix}rev4" type="revolute">
+            <parent link="${prefix}link4"/>
+            <child link="${prefix}link5"/>
+            <origin rpy="-0.20701608758495998 -1.5707963267948566 -2.937419385117548" xyz="0.0297547 0.0 -0.24175"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="0.0" lower="0" upper="${pi * 5.0 / 6.0}" velocity="0.0"/>
+        </joint>
+        <joint name="${prefix}rev5" type="revolute">
+            <parent link="${prefix}link5"/>
+            <child link="${prefix}link6"/>
+            <origin rpy="1.5707963267948473 -0.5569332500492129 1.556730325338251" xyz="-0.133937 0.00188408 -0.0297547"/>
+            <axis xyz="0 0 -1"/>
+            <limit effort="0.0" lower="${-pi * 2.0 / 3.0}" upper="${pi * 2.0 / 3.0}" velocity="0.0"/>
+        </joint>
+        <joint name="${prefix}rev6" type="revolute">
+            <parent link="${prefix}link6"/>
+            <child link="${prefix}link7"/>
+            <origin rpy="-1.5707963268024898 -1.5567303253382425 -0.5569332500461536" xyz="-0.0187648 -0.0301352 -0.12105"/>
+            <axis xyz="0 0 ${reflect}"/>
+            <limit effort="0.0" lower="${-pi / 2.0}" upper="${pi / 2.0}" velocity="0.0"/>
+        </joint>
+        <joint name="${prefix}rev7" type="revolute">
+            <parent link="${prefix}link7"/>
+            <child link="${prefix}link8"/>
+            <origin rpy="-1.5707963267950005 -0.00875904933536772 -0.014066001454933467" xyz="-0.000217313 -0.0154485 0.0355"/>
+            <axis xyz="0 0 -1"/>
+            <limit effort="0.0" lower="${-pi * 11.0 / 36.0}" upper="${pi * 11.0 / 36.0}" velocity="0.0"/>
+        </joint>
+        <joint name="${prefix}left_pris1" type="prismatic">
+            <parent link="${prefix}link8"/>
+            <child link="${prefix}link_left_jaw"/>
+            <origin rpy="1.570796326795101 -0.014066001454929162 0.00875904933542146" xyz="-0.1071 0.0768568 0.0132053"/>
+            <axis xyz="0 0 -1"/>
+            <limit effort="0.0" lower="-0.0451" upper="0.0" velocity="0.1"/>
+        </joint>
+        <joint name="${prefix}right_pris2" type="prismatic">
+            <parent link="${prefix}link8"/>
+            <child link="${prefix}link_right_jaw"/>
+            <origin rpy="1.570796326794883 -0.014066001454927403 0.008759049336290027" xyz="-0.10571 -0.0781373 0.0132053"/>
+            <axis xyz="0 0 -1"/>
+            <limit effort="0.0" lower="-0.0451" upper="0.0" velocity="0.0"/>
+            <mimic joint="${prefix}left_pris1" multiplier="-1.0" offset="0.0"/>
+        </joint>
+        <joint name="${prefix}virtual_gripper_center" type="fixed">
+            <parent link="${prefix}link8"/>
+            <child link="${prefix}gripper_center"/>
+            <origin rpy="0 0 0" xyz="-0.13 0.00 0.0132053"/>
+        </joint>
+    </xacro:macro>
+</robot>

@@ -16,7 +16,16 @@
 -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="openarm_bimanual">
 
-  <xacro:include filename="$(find openarm_description)/urdf/openarm.xacro"/>
+  <!-- Robot description parameters -->
+  <xacro:arg name="prefix" default="" />
+  
+  <!-- Control-related parameters -->
+  <xacro:arg name="right_can_device" default="can0" />
+  <xacro:arg name="left_can_device" default="can1" />
+  <xacro:arg name="use_mock_hardware" default="false" />
+  <xacro:arg name="mock_sensor_commands" default="false" />
+
+  <xacro:include filename="$(find openarm_description)/urdf/openarm.robot.xacro"/>
   <xacro:include filename="$(find openarm_bimanual_description)/urdf/openarm_pedestal.urdf"/>
   <xacro:include filename="openarm_bimanual_sensors.xacro"/>
 
@@ -27,18 +36,26 @@
     <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
   </joint>
 
-  <xacro:openarm prefix="right_" side="right" zero_pos="arm" can_device="can0"/>
+  <xacro:openarm_robot prefix="right_" side="right" zero_pos="arm"/>
   <joint name="right_fixed1" type="fixed">
     <parent link="pedestal_link"/>
     <child link="right_dummy_link"/>
     <origin rpy="${3.0186531925068127 + pi} -1.5707963267948268 0.12293946108298068" xyz="-0.09 0.0 0.893"/>
   </joint>
 
-  <xacro:openarm prefix="left_" side="left" zero_pos="arm" can_device="can1"/>
+  <xacro:openarm_robot prefix="left_" side="left" zero_pos="arm"/>
   <joint name="left_fixed1" type="fixed">
     <parent link="pedestal_link"/>
     <child link="left_dummy_link"/>
     <origin rpy="3.0144791747751833 -1.5707963267948324 0.12689401604101067" xyz="0.09 0.0 0.893"/>
   </joint>
+
+  <!-- Include control configuration for both arms -->
+  <xacro:include filename="$(find openarm_description)/urdf/openarm.ros2_control.xacro"/>
+  <xacro:arg name="right_initial_positions_file" default="$(find openarm_description)/config/initial_positions.yaml" />
+  <xacro:arg name="left_initial_positions_file" default="$(find openarm_description)/config/initial_positions.yaml" />
+  
+  <xacro:openarm_ros2_control name="RightOpenArmHW" prefix="right_" initial_positions_file="$(arg right_initial_positions_file)" can_device="$(arg right_can_device)" use_mock_hardware="$(arg use_mock_hardware)" mock_sensor_commands="$(arg mock_sensor_commands)"/>
+  <xacro:openarm_ros2_control name="LeftOpenArmHW" prefix="left_" initial_positions_file="$(arg left_initial_positions_file)" can_device="$(arg left_can_device)" use_mock_hardware="$(arg use_mock_hardware)" mock_sensor_commands="$(arg mock_sensor_commands)"/>
 
 </robot>
