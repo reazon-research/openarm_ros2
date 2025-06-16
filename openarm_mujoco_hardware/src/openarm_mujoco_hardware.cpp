@@ -22,6 +22,28 @@ hardware_interface::CallbackReturn MujocoHardware::on_init(const hardware_interf
 }
 
 hardware_interface::CallbackReturn MujocoHardware::on_configure(const rclcpp_lifecycle::State& previous_state) {
+    boost::beast::error_code ec;
+
+    acceptor_.open(endpoint_.protocol(), ec);
+    if (ec) {
+        throw std::runtime_error("Open error: " + ec.message());
+    }
+
+    acceptor_.set_option(net::socket_base::reuse_address(true), ec);
+    if (ec) {
+        throw std::runtime_error("Set_option error: " + ec.message());
+    }
+
+    acceptor_.bind(endpoint_, ec);
+    if (ec) {
+        throw std::runtime_error("Bind error: " + ec.message());
+    }
+
+    acceptor_.listen(boost::asio::socket_base::max_listen_connections, ec);
+    if (ec) {
+        throw std::runtime_error("Listen error: " + ec.message());
+    }
+
     read(rclcpp::Time(0), rclcpp::Duration(0, 0));
     return hardware_interface::CallbackReturn::SUCCESS;
 }
