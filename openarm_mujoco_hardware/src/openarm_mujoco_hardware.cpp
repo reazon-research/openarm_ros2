@@ -1,7 +1,7 @@
 #include "openarm_mujoco_hardware/openarm_mujoco_hardware.hpp"
 
 namespace mujoco_hardware_interface{
-hardware_interface::CallbackReturn MujocoHardware::on_init(const hardware_interface::HardwareInfo& info) {
+hardware_interface::CallbackReturn MujocoHardware::on_init(const hardware_interface::HardwareInfo& /*info*/) {
     KP_ = 100.0;
     KD_ = 10.0;
     address_ = boost::asio::ip::make_address("127.0.0.1");
@@ -21,7 +21,7 @@ hardware_interface::CallbackReturn MujocoHardware::on_init(const hardware_interf
     return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::CallbackReturn MujocoHardware::on_configure(const rclcpp_lifecycle::State& previous_state) {
+hardware_interface::CallbackReturn MujocoHardware::on_configure(const rclcpp_lifecycle::State& /*previous_state*/) {
     boost::beast::error_code ec;
 
     acceptor_.open(endpoint_.protocol(), ec);
@@ -29,7 +29,7 @@ hardware_interface::CallbackReturn MujocoHardware::on_configure(const rclcpp_lif
         throw std::runtime_error("Open error: " + ec.message());
     }
 
-    acceptor_.set_option(net::socket_base::reuse_address(true), ec);
+    acceptor_.set_option(boost::asio::socket_base::reuse_address(true), ec);
     if (ec) {
         throw std::runtime_error("Set_option error: " + ec.message());
     }
@@ -48,23 +48,23 @@ hardware_interface::CallbackReturn MujocoHardware::on_configure(const rclcpp_lif
     return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::CallbackReturn MujocoHardware::on_cleanup(const rclcpp_lifecycle::State& previous_state) {
+hardware_interface::CallbackReturn MujocoHardware::on_cleanup(const rclcpp_lifecycle::State& /*previous_state*/) {
     return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::CallbackReturn MujocoHardware::on_shutdown(const rclcpp_lifecycle::State& previous_state) {
+hardware_interface::CallbackReturn MujocoHardware::on_shutdown(const rclcpp_lifecycle::State& /*previous_state*/) {
     return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::CallbackReturn MujocoHardware::on_activate(const rclcpp_lifecycle::State& previous_state) {
+hardware_interface::CallbackReturn MujocoHardware::on_activate(const rclcpp_lifecycle::State& /*previous_state*/) {
     return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::CallbackReturn MujocoHardware::on_deactivate(const rclcpp_lifecycle::State& previous_state) {
+hardware_interface::CallbackReturn MujocoHardware::on_deactivate(const rclcpp_lifecycle::State& /*previous_state*/) {
     return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::CallbackReturn MujocoHardware::on_error(const rclcpp_lifecycle::State& previous_state) {
+hardware_interface::CallbackReturn MujocoHardware::on_error(const rclcpp_lifecycle::State& /*previous_state*/) {
     return hardware_interface::CallbackReturn::SUCCESS;
 }
 std::vector<hardware_interface::StateInterface> MujocoHardware::export_state_interfaces() {
@@ -85,12 +85,12 @@ std::vector<hardware_interface::CommandInterface> MujocoHardware::export_command
     }
     return command_interfaces;
 }
-hardware_interface::return_type MujocoHardware::read(const rclcpp::Time & time, const rclcpp::Duration & period) {
+hardware_interface::return_type MujocoHardware::read(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) {
     // Read state from the last recieived websocket message
     // Why decouple this? The simulation might be paused, and we want to read the last state
     return hardware_interface::return_type::OK;
 }
-hardware_interface::return_type MujocoHardware::write(const rclcpp::Time & time, const rclcpp::Duration & period) {
+hardware_interface::return_type MujocoHardware::write(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) {
     // send a websocket message
     for(size_t i = 0; i < cmd_qpos_.size(); ++i) {
         sim_MIT_control(i);
