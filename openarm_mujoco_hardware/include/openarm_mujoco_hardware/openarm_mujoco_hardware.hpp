@@ -7,10 +7,14 @@
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
 #include <boost/asio.hpp>
+#include <boost/json.hpp>
 
 #include <iostream>
+#include <mutex>
 
 namespace mujoco_hardware_interface {
+
+
 class MujocoHardware : public hardware_interface::SystemInterface {
 public:
     MujocoHardware() = default;
@@ -27,10 +31,12 @@ public:
     std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
     hardware_interface::return_type read(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) override;
     hardware_interface::return_type write(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) override;
+
+    friend class WebSocketSession;
 private:
     static double KP_;
     static double KD_;
-    void sim_MIT_control(const int interface_index);
+    void sim_MIT_control(const int interface_index) const;
 
     std::vector<double> qpos_;
     std::vector<double> qvel_;
@@ -40,16 +46,30 @@ private:
     std::vector<double> cmd_qvel_;
     std::vector<double> cmd_qtau_ff_;
 
+    std::mutex state_mutex_;
+
     // websocket connection to mujoco
+    inline static boost::asio::io_context ioc_;
+    static boost::asio::ip::tcp::acceptor acceptor_;
+    std::thread ioc_thread_;
+
+    std::shared_ptr<WebSocketSession> ws_session_;
+};
+
+class WebSocketSession : public std::enable_shared_from_this<WebSocketSession> {
+public:
+    void run(boost::asio::ip::tcp::socket socket, MujocoHardware* hw);
+    WebSocketSession(boost::asio::ip::tcp::socket socket, MujocoHardware* hw);
+private:
+    
+    void do_handshake();
+    void on_accept(boost::beast::error_code ec);
+    void do_read();
+    void on_read(boost::beast::error_code ec, std::size_t);
+
     boost::beast::websocket::stream<boost::asio::ip::tcp::socket> ws_;
     boost::beast::flat_buffer buffer_;
-    inline static boost::asio::io_context ioc_{};
-    static boost::asio::ip::address address_;
-    static constexpr unsigned short kWebsocketPort = 1337;
-    static boost::asio::ip::tcp::endpoint endpoint_;
-
-    static boost::asio::ip::tcp::acceptor acceptor_;
-
+    MujocoHardware* hw_;
 };
 };
 
