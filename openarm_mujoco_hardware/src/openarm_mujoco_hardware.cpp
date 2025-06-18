@@ -1,13 +1,13 @@
 #include "openarm_mujoco_hardware/openarm_mujoco_hardware.hpp"
+#include <boost/json.hpp>
 
 namespace mujoco_hardware_interface{
 
 hardware_interface::CallbackReturn MujocoHardware::on_init(const hardware_interface::HardwareInfo& /*info*/) {
     KP_ = 100.0;
     KD_ = 10.0;
-    ioc_ = boost::asio::io_context(1);
     address_ = boost::asio::ip::make_address("127.0.0.1");
-    endpoint_ = boost::asio::ip::tcp::endpoint{address_, kWebsocketPort};
+    endpoint_ = boost::asio::ip::tcp::endpoint(address_, kWebsocketPort);
 
     // allocate space for joint states
     const int DOF = 16;
@@ -54,7 +54,7 @@ hardware_interface::CallbackReturn MujocoHardware::on_configure(const rclcpp_lif
             }
             std::cout << "new connection accepted." << std::endl;
             ws_session_ = WebSocketSession::create(std::move(socket), this);
-            ws_session_.run();
+            ws_session_->run();
         });
     
     ioc_thread_ = std::thread([this]() {
@@ -73,7 +73,7 @@ hardware_interface::CallbackReturn MujocoHardware::on_cleanup(const rclcpp_lifec
 
 hardware_interface::CallbackReturn MujocoHardware::on_shutdown(const rclcpp_lifecycle::State& /*previous_state*/) {
     ioc_.stop();
-    if(ioc_.thread_.joinable()) ioc_.thread_.join();
+    if(ioc_thread_.joinable()) ioc_thread_.join();
     return hardware_interface::CallbackReturn::SUCCESS;
 }
 
@@ -132,23 +132,24 @@ void MujocoHardware::sim_MIT_control(const int interface_index) const{
     // TODO: Send cmd_torque to the simulation environment
 }
 
-std::shared_ptr<WebSocketSession> WebSocketSession::create(boost::asio::ip::tcp::socket socket, MujocoHardware* hw) 
-{
-    return std::make_shared<WebSocketSession>(std::move(socket), hw);
-}
+
 
 WebSocketSession::WebSocketSession(boost::asio::ip::tcp::socket socket, MujocoHardware* hw)
     : ws_(std::move(socket)), hw_(hw) {}
 
-void WebSocketSession::run(boost::asio::ip::tcp::socket socket, MujocoHardware* hw){
-    const auto session = std::make_shared<WebSocketSession> (std::move(socket), hw);
-    session->do_handshake();
+std::shared_ptr<WebSocketSession> WebSocketSession::create(boost::asio::ip::tcp::socket socket, MujocoHardware* hw){
+    return std::make_shared<WebSocketSession>(std::move(socket), hw);
+}
+
+
+void WebSocketSession::run(){
+    do_handshake();
 }
 
 void WebSocketSession::do_handshake() {
     ws_.set_option(
         boost::beast::websocket::stream_base::timeout::suggested(
-            boost::beast::websocket::role_type::server));
+           boost::beast::role_type::server));
     ws_.async_accept(
         boost::beast::bind_front_handler(
             &WebSocketSession::on_accept, shared_from_this()));

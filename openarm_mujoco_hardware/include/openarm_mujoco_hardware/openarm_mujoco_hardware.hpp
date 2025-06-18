@@ -7,13 +7,13 @@
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
 #include <boost/asio.hpp>
-#include <boost/json.hpp>
 
 #include <iostream>
 #include <mutex>
 
 namespace mujoco_hardware_interface {
 
+class WebSocketSession;
 
 class MujocoHardware : public hardware_interface::SystemInterface {
 public:
@@ -49,16 +49,24 @@ private:
     std::mutex state_mutex_;
 
     // websocket connection to mujoco
+    boost::asio::ip::tcp::endpoint endpoint_;
+    boost::asio::ip::address address_;
+    static constexpr double kWebsocketPort = 1337;
     inline static boost::asio::io_context ioc_;
     static boost::asio::ip::tcp::acceptor acceptor_;
     std::thread ioc_thread_;
 
     std::shared_ptr<WebSocketSession> ws_session_;
+
 };
 
 class WebSocketSession : public std::enable_shared_from_this<WebSocketSession> {
 public:
-    void run(boost::asio::ip::tcp::socket socket, MujocoHardware* hw);
+    static std::shared_ptr<WebSocketSession> create(
+            boost::asio::ip::tcp::socket socket,
+            MujocoHardware* hw
+        );
+    void run();
     WebSocketSession(boost::asio::ip::tcp::socket socket, MujocoHardware* hw);
 private:
     

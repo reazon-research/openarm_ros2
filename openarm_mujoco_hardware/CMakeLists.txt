@@ -11,6 +11,13 @@ find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
+find_package(Boost REQUIRED)
+
+# upgrade to libboost1.81-all-dev
+
+# sudo add-apt-repository ppa:mhier/libboost-latest
+# sudo apt update
+# sudo apt install libboost
 
 add_library(${PROJECT_NAME} SHARED
   src/openarm_mujoco_hardware.cpp
@@ -30,6 +37,8 @@ ament_target_dependencies(${PROJECT_NAME}
 )
 
 pluginlib_export_plugin_description_file(hardware_interface openarm_mujoco_hardware.xml)
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIRS})
 
 install(
   TARGETS ${PROJECT_NAME}
