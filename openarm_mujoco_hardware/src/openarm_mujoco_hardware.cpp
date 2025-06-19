@@ -175,23 +175,20 @@ void WebSocketSession::on_read(boost::beast::error_code ec, std::size_t bytes_tr
     {
         std::lock_guard<std::mutex> (hw_->state_mutex_);
         try{
-            boost::json::value jv = boost::json::parse(data);
-            boost::json::object& obj = jv.as_object();
-            if(obj.find("key") == obj.end() || obj.find("val") == obj.end()){
-                return;
-            }
-            if(obj["key"].as_string() == "state"){
-                boost::json::object& val = obj["val"].as_object();
-                boost::json::array& qpos = val["qpos"].as_array();
-                boost::json::array& qvel = val["qvel"].as_array();
-                for(size_t i = 0; i < qpos.size(); ++i){
-                    hw_->qpos_[i] = qpos[i].as_double();
-                    hw_->qvel_[i] = qvel[i].as_double();
+            nlohmann::json j = nlohmann::json::parse(data);
+            const std::string key = j.value("key", "");
+            if(key == "state"){
+                const nlohmann::json& val = j.at("val");
+                const nlohmann::json& qpos_a = val.at("qpos");
+                const nlohmann::json& qvel_a = val.at("qvel");
+                for(size_t i = 0; i < qpos_a.size(); ++i){
+                    hw_->qpos_[i] = qpos_a[i].get<double>();
+                    hw_->qvel_[i] = qvel_a[i].get<double>();
                 }
             }
         }
-        catch(const std::exception& e){
-            std::cerr << "json parse error: " << std::endl;
+        catch(const nlohmann::json::parse_error& e){
+            std::cerr << "json parse error: " << e.what() << std::endl;
         }
     };
 
