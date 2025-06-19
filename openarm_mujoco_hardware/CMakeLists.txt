@@ -57,7 +57,7 @@ if(BUILD_TESTING)
   find_package(ros2_control_test_assets REQUIRED)
 
   ament_add_gmock(test_openarm_mujoco_hardware
-    test/test_openarm_mujoco_hardware.cpp
+    test/test_load_openarm_mujoco_hardware.cpp
   )
   target_link_libraries(test_openarm_mujoco_hardware
     ${PROJECT_NAME}

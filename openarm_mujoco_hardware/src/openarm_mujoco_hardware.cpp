@@ -1,5 +1,4 @@
 #include "openarm_mujoco_hardware/openarm_mujoco_hardware.hpp"
-#include <boost/json.hpp>
 
 namespace mujoco_hardware_interface{
 
@@ -202,3 +201,8 @@ void WebSocketSession::on_read(boost::beast::error_code ec, std::size_t bytes_tr
 
 
 }; // namespace mujoco_hardware_interface
+
+#include "pluginlib/class_list_macros.hpp"
+
+PLUGINLIB_EXPORT_CLASS(mujoco_hardware_interface::MujocoHardware,
+                       hardware_interface::SystemInterface)

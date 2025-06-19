@@ -7,6 +7,7 @@
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
 #include <boost/asio.hpp>
+#include <boost/json.hpp>
 
 #include <iostream>
 #include <mutex>
