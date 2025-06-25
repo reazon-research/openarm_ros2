@@ -1,0 +1,11 @@
+<library path="openarm_gravcomp_controller">
+  <class
+    name="openarm_gravcomp_controller/GravityCompensationController"
+    type="openarm_gravcomp_controller::GravityCompensationController"
+    base_class_type="controller_interface::ControllerInterface">
+    <description>
+      A gravity compensation controller for the OpenArm.
+      Computes and sends effort commands to each joint to counteract gravity.
+    </description>
+  </class>
+</library>
