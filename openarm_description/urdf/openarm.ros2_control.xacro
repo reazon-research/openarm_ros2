@@ -15,7 +15,7 @@
 　limitations under the License.
 -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <xacro:macro name="openarm_ros2_control" params="name initial_positions_file prefix:='' can_device='can0'">
+    <xacro:macro name="openarm_ros2_control" params="name initial_positions_file prefix:='' can_device='can0' use_mock_hardware='false' mock_sensor_commands='{}'">
         <xacro:property name="initial_positions" value="${xacro.load_yaml(initial_positions_file)['initial_positions']}"/>
 
         <ros2_control name="${prefix}${name}" type="system">
@@ -25,7 +25,8 @@
                     <param name="mock_sensor_commands">${mock_sensor_commands}</param>
                 </xacro:if>
                 <xacro:unless value="${use_mock_hardware}">
-                    <plugin>mujoco_openarm_hardware/MujocoHardware</plugin>
+                    <plugin>openarm_mujoco_hardware/MujocoHardware</plugin>
+                    <param name="prefix">${prefix}</param>
                     <!-- <plugin>openarm_hardware/OpenArmHW</plugin>
                     <param name="prefix">${prefix}</param>
                     <param name="can_device">${can_device}</param> -->
@@ -34,58 +35,58 @@
             <joint name="${prefix}rev1">
                 <command_interface name="position"/>
                 <command_interface name="velocity"/>
-                <command_interface name="effort"/>
+                <!-- <command_interface name="effort"/> -->
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <!-- <state_interface name="effort"/> -->
             </joint>
             <joint name="${prefix}rev2">
                 <command_interface name="position"/>
                 <command_interface name="velocity"/>
-                <command_interface name="effort"/>
+                <!-- <command_interface name="effort"/> -->
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <!-- <state_interface name="effort"/> -->
             </joint>
             <joint name="${prefix}rev3">
                 <command_interface name="position"/>
                 <command_interface name="velocity"/>
-                <command_interface name="effort"/>
+                <!-- <command_interface name="effort"/> -->
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <!-- <state_interface name="effort"/> -->
             </joint>
             <joint name="${prefix}rev4">
                 <command_interface name="position"/>
                 <command_interface name="velocity"/>
-                <command_interface name="effort"/>
+                <!-- <command_interface name="effort"/> -->
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <!-- <state_interface name="effort"/> -->
             </joint>
             <joint name="${prefix}rev5">
                 <command_interface name="position"/>
                 <command_interface name="velocity"/>
-                <command_interface name="effort"/>
+                <!-- <command_interface name="effort"/> -->
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <!-- <state_interface name="effort"/> -->
             </joint>
             <joint name="${prefix}rev6">
                 <command_interface name="position"/>
                 <command_interface name="velocity"/>
-                <command_interface name="effort"/>
+                <!-- <command_interface name="effort"/> -->
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <!-- <state_interface name="effort"/> -->
             </joint>
             <joint name="${prefix}rev7">
                 <command_interface name="position"/>
                 <command_interface name="velocity"/>
-                <command_interface name="effort"/>
+                <!-- <command_interface name="effort"/> -->
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <!-- <state_interface name="effort"/> -->
             </joint>
             <joint name="${prefix}left_pris1">
                 <command_interface name="position"/>

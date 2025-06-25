@@ -1,15 +1,24 @@
 #include "openarm_mujoco_hardware/openarm_mujoco_hardware.hpp"
 
-namespace mujoco_hardware_interface{
+namespace openarm_mujoco_hardware{\
 
-hardware_interface::CallbackReturn MujocoHardware::on_init(const hardware_interface::HardwareInfo& /*info*/) {
+double MujocoHardware::KP_;
+double MujocoHardware::KD_;
+boost::asio::ip::tcp::acceptor MujocoHardware::acceptor_{ MujocoHardware::ioc_ };
+
+hardware_interface::CallbackReturn MujocoHardware::on_init(const hardware_interface::HardwareInfo& info) {
+
+    if (hardware_interface::SystemInterface::on_init(info) !=
+      CallbackReturn::SUCCESS) {
+    return CallbackReturn::ERROR;
+    }
     KP_ = 100.0;
     KD_ = 10.0;
     address_ = boost::asio::ip::make_address("127.0.0.1");
     endpoint_ = boost::asio::ip::tcp::endpoint(address_, kWebsocketPort);
 
     // allocate space for joint states
-    const int DOF = 16;
+    const size_t DOF = info_.joints.size();
     
     qpos_.resize(DOF, 0.0); 
     qvel_.resize(DOF, 0.0);
@@ -25,24 +34,27 @@ hardware_interface::CallbackReturn MujocoHardware::on_init(const hardware_interf
 hardware_interface::CallbackReturn MujocoHardware::on_configure(const rclcpp_lifecycle::State& /*previous_state*/) {
     boost::beast::error_code ec;
 
-    acceptor_.open(endpoint_.protocol(), ec);
-    if (ec) {
-        throw std::runtime_error("open error: " + ec.message());
-    }
+    if (!acceptor_.is_open()) {
 
-    acceptor_.set_option(boost::asio::socket_base::reuse_address(true), ec);
-    if (ec) {
-        throw std::runtime_error("enable address reuse error: " + ec.message());
-    }
-
-    acceptor_.bind(endpoint_, ec);
-    if (ec) {
-        throw std::runtime_error("bind error: " + ec.message());
-    }
-
-    acceptor_.listen(boost::asio::socket_base::max_listen_connections, ec);
-    if (ec) {
-        throw std::runtime_error("listen error: " + ec.message());
+        acceptor_.open(endpoint_.protocol(), ec);
+        if (ec) {
+            throw std::runtime_error("open error: " + ec.message());
+        }
+        
+        acceptor_.set_option(boost::asio::socket_base::reuse_address(true), ec);
+        if (ec) {
+            throw std::runtime_error("enable address reuse error: " + ec.message());
+        }
+        
+        acceptor_.bind(endpoint_, ec);
+        if (ec) {
+            throw std::runtime_error("bind error: " + ec.message());
+        }
+        
+        acceptor_.listen(boost::asio::socket_base::max_listen_connections, ec);
+        if (ec) {
+            throw std::runtime_error("listen error: " + ec.message());
+        }
     }
 
     acceptor_.async_accept(
@@ -180,10 +192,18 @@ void WebSocketSession::on_read(boost::beast::error_code ec, std::size_t bytes_tr
             if(key == "state"){
                 const nlohmann::json& val = j.at("val");
                 const nlohmann::json& qpos_a = val.at("qpos");
+                for (auto& [key, v] : qpos_a.items()) {
+                    size_t idx = std::stoul(key);
+                    if (idx < hw_->qpos_.size()) {
+                        hw_->qpos_[idx] = v.get<double>();
+                    }
+                }
                 const nlohmann::json& qvel_a = val.at("qvel");
-                for(size_t i = 0; i < qpos_a.size(); ++i){
-                    hw_->qpos_[i] = qpos_a[i].get<double>();
-                    hw_->qvel_[i] = qvel_a[i].get<double>();
+                for (auto& [key, v] : qvel_a.items()) {
+                    size_t idx = std::stoul(key);
+                    if (idx < hw_->qvel_.size()) {
+                        hw_->qvel_[idx] = v.get<double>();
+                    }
                 }
             }
         }
@@ -197,9 +217,9 @@ void WebSocketSession::on_read(boost::beast::error_code ec, std::size_t bytes_tr
 }
 
 
-}; // namespace mujoco_hardware_interface
+}; // namespace openarm_mujoco_hardware
 
 #include "pluginlib/class_list_macros.hpp"
 
-PLUGINLIB_EXPORT_CLASS(mujoco_hardware_interface::MujocoHardware,
+PLUGINLIB_EXPORT_CLASS(openarm_mujoco_hardware::MujocoHardware,
                        hardware_interface::SystemInterface)

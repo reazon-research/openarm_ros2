@@ -12,7 +12,7 @@
 #include <iostream>
 #include <mutex>
 
-namespace mujoco_hardware_interface {
+namespace openarm_mujoco_hardware {
 
 class WebSocketSession;
 
@@ -20,7 +20,7 @@ class MujocoHardware : public hardware_interface::SystemInterface {
 public:
     MujocoHardware() = default;
 
-    hardware_interface::CallbackReturn on_init(const hardware_interface::HardwareInfo& /*info*/) override;
+    hardware_interface::CallbackReturn on_init(const hardware_interface::HardwareInfo& info) override;
     hardware_interface::CallbackReturn on_configure(const rclcpp_lifecycle::State& /*previous_state*/) override;
     hardware_interface::CallbackReturn on_cleanup(const rclcpp_lifecycle::State& /*previous_state*/) override;
     hardware_interface::CallbackReturn on_shutdown(const rclcpp_lifecycle::State& /*previous_state*/) override;
