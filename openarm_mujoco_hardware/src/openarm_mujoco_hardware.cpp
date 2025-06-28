@@ -1,10 +1,6 @@
 #include "openarm_mujoco_hardware/openarm_mujoco_hardware.hpp"
 
-namespace openarm_mujoco_hardware{\
-
-double MujocoHardware::KP_;
-double MujocoHardware::KD_;
-boost::asio::ip::tcp::acceptor MujocoHardware::acceptor_{ MujocoHardware::ioc_ };
+namespace openarm_mujoco_hardware{
 
 hardware_interface::CallbackReturn MujocoHardware::on_init(const hardware_interface::HardwareInfo& info) {
 
@@ -12,10 +8,22 @@ hardware_interface::CallbackReturn MujocoHardware::on_init(const hardware_interf
       CallbackReturn::SUCCESS) {
     return CallbackReturn::ERROR;
     }
+
+    if (info.hardware_parameters.find("websocket_port") != info.hardware_parameters.end()) {
+        const double val = std::stoi(info.hardware_parameters.at("websocket_port"));
+        if (val <= 0){
+            return hardware_interface::CallbackReturn::FAILURE;
+        }
+        websocket_port_ = val;
+    }
+    else {
+        websocket_port_ = kDefaultWebsocketPort;
+    }
+    std::cout << "websocket port: " << websocket_port_ << std::endl;
     KP_ = 100.0;
     KD_ = 10.0;
     address_ = boost::asio::ip::make_address("127.0.0.1");
-    endpoint_ = boost::asio::ip::tcp::endpoint(address_, kWebsocketPort);
+    endpoint_ = boost::asio::ip::tcp::endpoint(address_, websocket_port_);
 
     // allocate space for joint states
     const size_t DOF = info_.joints.size();
@@ -31,43 +39,50 @@ hardware_interface::CallbackReturn MujocoHardware::on_init(const hardware_interf
     return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::CallbackReturn MujocoHardware::on_configure(const rclcpp_lifecycle::State& /*previous_state*/) {
-    boost::beast::error_code ec;
-
-    if (!acceptor_.is_open()) {
-
-        acceptor_.open(endpoint_.protocol(), ec);
-        if (ec) {
-            throw std::runtime_error("open error: " + ec.message());
-        }
-        
-        acceptor_.set_option(boost::asio::socket_base::reuse_address(true), ec);
-        if (ec) {
-            throw std::runtime_error("enable address reuse error: " + ec.message());
-        }
-        
-        acceptor_.bind(endpoint_, ec);
-        if (ec) {
-            throw std::runtime_error("bind error: " + ec.message());
-        }
-        
-        acceptor_.listen(boost::asio::socket_base::max_listen_connections, ec);
-        if (ec) {
-            throw std::runtime_error("listen error: " + ec.message());
-        }
-    }
-
+void MujocoHardware::start_accept() {
     acceptor_.async_accept(
         [this](boost::beast::error_code ec, boost::asio::ip::tcp::socket socket) {
             if (ec) {
                 std::cerr << "error accepting connection: " << ec.message() << std::endl;
-                return;
             }
             std::cout << "new connection accepted." << std::endl;
             ws_session_ = WebSocketSession::create(std::move(socket), this);
             ws_session_->run();
-        });
+            this->start_accept();
+        }
+    );
+}
+
+hardware_interface::CallbackReturn MujocoHardware::on_configure(const rclcpp_lifecycle::State& /*previous_state*/) {
+    boost::beast::error_code ec;
+
+    if (acceptor_.is_open()) {
+        return hardware_interface::CallbackReturn::FAILURE;
+    }
+    else{
+        acceptor_.open(endpoint_.protocol(), ec);
+        if (ec) {
+            throw std::runtime_error("open error: " + ec.message());
+        }
+    }
+
+    acceptor_.set_option(boost::asio::socket_base::reuse_address(true), ec);
+    if (ec) {
+        throw std::runtime_error("enable address reuse error: " + ec.message());
+    }
     
+    acceptor_.bind(endpoint_, ec);
+    if (ec) {
+        throw std::runtime_error("bind error: " + ec.message());
+    }
+    
+    acceptor_.listen(boost::asio::socket_base::max_listen_connections, ec);
+    if (ec) {
+        throw std::runtime_error("listen error: " + ec.message());
+    }
+    
+    start_accept();
+
     ioc_thread_ = std::thread([this]() {
         try {
             ioc_.run();
@@ -75,6 +90,8 @@ hardware_interface::CallbackReturn MujocoHardware::on_configure(const rclcpp_lif
             std::cerr << "error in io_context thread: " << e.what() << std::endl;
         }
     });
+    
+
     return hardware_interface::CallbackReturn::SUCCESS;
 }
 
@@ -191,18 +208,14 @@ void WebSocketSession::on_read(boost::beast::error_code ec, std::size_t bytes_tr
             const std::string key = j.value("key", "");
             if(key == "state"){
                 const nlohmann::json& val = j.at("val");
-                const nlohmann::json& qpos_a = val.at("qpos");
-                for (auto& [key, v] : qpos_a.items()) {
-                    size_t idx = std::stoul(key);
-                    if (idx < hw_->qpos_.size()) {
-                        hw_->qpos_[idx] = v.get<double>();
+                for (size_t i = 0; i < hw_->info_.joints.size(); ++i) {
+                    const std::string& joint = hw_->info_.joints[i].name;
+                    const nlohmann::json& joint_data = val.at(joint);
+                    if (joint_data.contains("qpos")) {
+                        hw_->qpos_[i] = joint_data.at("qpos").get<double>();
                     }
-                }
-                const nlohmann::json& qvel_a = val.at("qvel");
-                for (auto& [key, v] : qvel_a.items()) {
-                    size_t idx = std::stoul(key);
-                    if (idx < hw_->qvel_.size()) {
-                        hw_->qvel_[idx] = v.get<double>();
+                    if (joint_data.contains("qvel")) {
+                        hw_->qvel_[i] = joint_data.at("qvel").get<double>();
                     }
                 }
             }

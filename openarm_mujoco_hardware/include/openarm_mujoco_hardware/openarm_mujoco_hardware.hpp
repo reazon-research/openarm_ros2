@@ -33,10 +33,13 @@ public:
     hardware_interface::return_type read(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) override;
     hardware_interface::return_type write(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) override;
 
+    
     friend class WebSocketSession;
-private:
-    static double KP_;
-    static double KD_;
+    private:
+    void start_accept();
+    
+    double KP_;
+    double KD_;
     void sim_MIT_control(const int interface_index) const;
 
     std::vector<double> qpos_;
@@ -52,9 +55,10 @@ private:
     // websocket connection to mujoco
     boost::asio::ip::tcp::endpoint endpoint_;
     boost::asio::ip::address address_;
-    static constexpr double kWebsocketPort = 1337;
-    inline static boost::asio::io_context ioc_;
-    static boost::asio::ip::tcp::acceptor acceptor_;
+    static constexpr double kDefaultWebsocketPort = 1337;
+    double websocket_port_;
+    boost::asio::io_context ioc_{};
+    boost::asio::ip::tcp::acceptor acceptor_{ioc_};
     std::thread ioc_thread_;
 
     std::shared_ptr<WebSocketSession> ws_session_;
