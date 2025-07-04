@@ -1,0 +1,33 @@
+services:
+  ros2-desktop-vnc:
+    container_name: ros2_desktop_vnc
+    image: ghcr.io/thomasonzhou/ros2:humble-vnc
+    ports:
+      - "80:80"
+      - "1337:1337"
+      - "1338:1338"
+      - "8080:8080" # Alternative VNC port
+    environment:
+      # Dynamic user configuration - matches host user for proper file permissions
+      - CONTAINER_USER=${USER:-ubuntu}
+      - CONTAINER_UID=${CONTAINER_UID:-1000}
+      - CONTAINER_GID=${CONTAINER_GID:-1000}
+      - VNC_PASSWORD=${VNC_PASSWORD:-ubuntu}
+      - USER=${USER:-ubuntu}
+      - PASSWD=${VNC_PASSWORD:-ubuntu}
+      - HTTP_PORT=8080
+      - ROS_DISTRO=humble
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+    volumes:
+      - ./workspace:/home/ubuntu/workspace:rw
+      - ./shared:/home/ubuntu/shared:rw
+      - vnc_config:/home/ubuntu/.vnc
+      - ros_config:/home/ubuntu/.ros
+    security_opt:
+      - seccomp:unconfined
+    shm_size: 512m
+    restart: unless-stopped
+
+volumes:
+  vnc_config:
+  ros_config:

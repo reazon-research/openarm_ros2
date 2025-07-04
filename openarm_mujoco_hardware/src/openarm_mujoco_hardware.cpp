@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <algorithm>
 #include <openarm_mujoco_hardware/openarm_mujoco_hardware.hpp>
+#include <rclcpp/logging.hpp>
 
 namespace openarm_mujoco_hardware {
 
@@ -52,16 +54,23 @@ hardware_interface::CallbackReturn MujocoHardware::on_init(
 }
 
 void MujocoHardware::start_accept() {
-  acceptor_.async_accept([this](boost::beast::error_code ec,
-                                boost::asio::ip::tcp::socket socket) {
-    if (ec) {
-      std::cerr << "error accepting connection: " << ec.message() << std::endl;
-    }
-    std::cout << "new connection accepted." << std::endl;
-    ws_session_ = WebSocketSession::create(std::move(socket), this);
-    ws_session_->run();
-    this->start_accept();
-  });
+  acceptor_.async_accept(
+      [this](boost::beast::error_code ec, boost::asio::ip::tcp::socket socket) {
+        if (ec) {
+          RCLCPP_WARN(rclcpp::get_logger("MujocoHardware"),
+                      "accept error: %s — retrying", ec.message().c_str());
+          return start_accept();
+        }
+
+        if (ws_session_) {
+          ws_session_->close_with_delay();
+        }
+
+        ws_session_ = WebSocketSession::create(std::move(socket), this);
+        ws_session_->run();
+
+        this->start_accept();
+      });
 }
 
 hardware_interface::CallbackReturn MujocoHardware::on_configure(
@@ -200,11 +209,6 @@ hardware_interface::return_type MujocoHardware::write(
 
     double cmd_torque = KP_[i] * qpos_error + KD_[i] * qvel_error + qtau_ff;
 
-    // if (cmd_torque > MAX_MOTOR_TORQUE) {
-    //     cmd_torque = MAX_MOTOR_TORQUE;
-    // } else if (cmd_torque < -MAX_MOTOR_TORQUE) {
-    //     cmd_torque = -MAX_MOTOR_TORQUE;
-    // }
     cmd[info_.joints[i].name] = cmd_torque;
   }
   if (ws_session_) {
@@ -219,7 +223,10 @@ hardware_interface::return_type MujocoHardware::write(
 
 WebSocketSession::WebSocketSession(boost::asio::ip::tcp::socket socket,
                                    MujocoHardware* hw)
-    : ws_(std::move(socket)), hw_(hw), write_in_progress_(false) {}
+    : ws_(std::move(socket)), hw_(hw), write_in_progress_(false) {
+  close_timer_ =
+      std::make_unique<boost::asio::steady_timer>(ws_.get_executor());
+}
 
 std::shared_ptr<WebSocketSession> WebSocketSession::create(
     boost::asio::ip::tcp::socket socket, MujocoHardware* hw) {
@@ -246,30 +253,56 @@ void WebSocketSession::flush() {
   auto msg = send_queue_.front();
   send_queue_.pop_front();
 
-  ws_.async_write(boost::asio::buffer(*msg),
-                  [self = shared_from_this(), msg](boost::beast::error_code ec,
-                                                   std::size_t) {
-                    if (ec) {
-                      std::cerr << "send error: " << ec.message() << std::endl;
-                    }
-                    self->write_in_progress_ = false;
-                    self->flush();
-                  });
+  ws_.async_write(
+      boost::asio::buffer(*msg), [self = shared_from_this(), msg](
+                                     boost::beast::error_code ec, std::size_t) {
+        if (ec) {
+          RCLCPP_WARN(rclcpp::get_logger("WebSocketSession"),
+                      "write error: %s — triggering reconnect",
+                      ec.message().c_str());
+          if (self->hw_) {
+            self->hw_->start_accept();  // restart accept loop directly
+          }
+          return;
+        }
+        self->write_in_progress_ = false;
+        self->flush();
+      });
 }
 
-void WebSocketSession::run() { do_handshake(); }
-
-void WebSocketSession::do_handshake() {
+void WebSocketSession::run() {
   ws_.set_option(boost::beast::websocket::stream_base::timeout::suggested(
       boost::beast::role_type::server));
+
+  ws_.control_callback(
+      [self = shared_from_this()](boost::beast::websocket::frame_type kind,
+                                  boost::beast::string_view) {
+        if (kind == boost::beast::websocket::frame_type::close) return;
+        RCLCPP_WARN(rclcpp::get_logger("WebSocketSession"),
+                    "Abnormal frame, forcing close");
+        self->ws_.next_layer().shutdown(
+            boost::asio::ip::tcp::socket::shutdown_both);
+      });
+
+  do_handshake();
+}
+
+void WebSocketSession::do_handshake() {
   ws_.async_accept(boost::beast::bind_front_handler(
       &WebSocketSession::on_accept, shared_from_this()));
 }
 
 void WebSocketSession::on_accept(boost::beast::error_code ec) {
   if (ec) {
-    std::cerr << "handshake failed: " << ec.message() << std::endl;
+    RCLCPP_WARN(rclcpp::get_logger("WebSocketSession"),
+                "handshake error: %s — triggering reconnect",
+                ec.message().c_str());
+    if (hw_) {
+      hw_->start_accept();
+    }
+    return;
   }
+
   do_read();
 }
 
@@ -281,9 +314,14 @@ void WebSocketSession::do_read() {
 void WebSocketSession::on_read(boost::beast::error_code ec,
                                std::size_t bytes_transferred) {
   if (ec) {
-    std::cerr << "read error: " << ec.message() << std::endl;
+    RCLCPP_WARN(rclcpp::get_logger("WebSocketSession"),
+                "read error: %s — triggering reconnect", ec.message().c_str());
+    if (hw_) {
+      hw_->start_accept();
+    }
     return;
   }
+
   std::string data = boost::beast::buffers_to_string(buffer_.data());
   {
     std::lock_guard<std::mutex>(hw_->state_mutex_);
@@ -314,6 +352,16 @@ void WebSocketSession::on_read(boost::beast::error_code ec,
   do_read();
 }
 
+void WebSocketSession::close_with_delay() {
+  close_timer_->expires_after(kCloseDelayMs);
+  close_timer_->async_wait([self = shared_from_this()](
+                               boost::beast::error_code ec) {
+    if (!ec) {
+      boost::beast::error_code close_ec;
+      self->ws_.close(boost::beast::websocket::close_code::normal, close_ec);
+    }
+  });
+}
 };  // namespace openarm_mujoco_hardware
 
 #include "pluginlib/class_list_macros.hpp"

@@ -102,11 +102,11 @@ class Motor {
   double getTorque() const;
   int getParam(int RID) const;
   void setTempParam(int RID, int val);
+  DM_Motor_Type MotorType;
   uint16_t SlaveID;
   uint16_t MasterID;
   bool isEnable;
   Control_Type NowControlMode;
-  DM_Motor_Type MotorType;
 
   int getStateTmos() const;
   int getStateTrotor() const;

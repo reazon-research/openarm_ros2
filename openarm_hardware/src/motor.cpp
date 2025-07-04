@@ -21,17 +21,18 @@ Motor::Motor(DM_Motor_Type motorType, uint16_t slaveID, uint16_t masterID)
     : MotorType(motorType),
       SlaveID(slaveID),
       MasterID(masterID),
+      isEnable(false),
+      NowControlMode(Control_Type::MIT),
       Pd(0.0),
       Vd(0.0),
       goal_position(0.0),
+      goal_velocity(0.0),
       goal_tau(0.0),
       state_q(0.0),
       state_dq(0.0),
       state_tau(0.0),
       state_tmos(0),
-      state_trotor(0),
-      isEnable(false),
-      NowControlMode(Control_Type::MIT) {}
+      state_trotor(0) {}
 
 void Motor::recv_data(double q, double dq, double tau, int tmos, int trotor) {
   state_q = q;
