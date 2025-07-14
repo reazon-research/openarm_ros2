@@ -30,7 +30,7 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_robot_description(context: LaunchContext, description_package, description_file,
-                              arm_type, use_fake_hardware):
+                              arm_type, use_fake_hardware, can_interface, arm_prefix):
     """Generate robot description using xacro processing."""
 
     # Substitute launch configuration values
@@ -38,6 +38,9 @@ def generate_robot_description(context: LaunchContext, description_package, desc
     description_file_str = context.perform_substitution(description_file)
     arm_type_str = context.perform_substitution(arm_type)
     use_fake_hardware_str = context.perform_substitution(use_fake_hardware)
+    can_interface_str = context.perform_substitution(can_interface)
+    arm_prefix_str = context.perform_substitution(arm_prefix)
+
 
     # Build xacro file path
     xacro_path = os.path.join(
@@ -53,7 +56,8 @@ def generate_robot_description(context: LaunchContext, description_package, desc
             "bimanual": "false",  # Unimanual configuration
             "use_fake_hardware": use_fake_hardware_str,
             "ros2_control": "true",
-            "can_interface": "can0",
+            "can_interface": can_interface_str,
+            "arm_prefix": arm_prefix_str,
         }
     ).toprettyxml(indent="  ")
 
@@ -61,12 +65,12 @@ def generate_robot_description(context: LaunchContext, description_package, desc
 
 
 def robot_spawner(context: LaunchContext, description_package, description_file,
-                 arm_type, use_fake_hardware, controllers_file):
+                 arm_type, use_fake_hardware, controllers_file, can_interface, arm_prefix):
     """Spawn robot description and control nodes."""
 
     # Generate robot description
     robot_description = generate_robot_description(
-        context, description_package, description_file, arm_type, use_fake_hardware
+        context, description_package, description_file, arm_type, use_fake_hardware, can_interface, arm_prefix
     )
 
     # Get controllers file path
@@ -129,6 +133,26 @@ def generate_launch_description():
             default_value="openarm_bringup",
             description="Package with the controller's configuration in config folder.",
         ),
+        DeclareLaunchArgument(
+            "arm_prefix",
+            default_value="",
+            description="Prefix for the arm.",
+        ),
+        DeclareLaunchArgument(
+            "can_interface",
+            default_value="can0",
+            description="CAN interface to use.",
+        ),
+        DeclareLaunchArgument(
+            "controllers_file",
+            default_value="openarm_v10_controllers.yaml",
+            description="Controllers file to use.",
+        ),
+        DeclareLaunchArgument(
+            "bimanual",
+            default_value="false",
+            description="Bimanual configuration.",
+        ),
     ]
 
     # Initialize launch configurations
@@ -138,18 +162,22 @@ def generate_launch_description():
     use_fake_hardware = LaunchConfiguration("use_fake_hardware")
     robot_controller = LaunchConfiguration("robot_controller")
     runtime_config_package = LaunchConfiguration("runtime_config_package")
+    controllers_file = LaunchConfiguration("controllers_file")
+    can_interface = LaunchConfiguration("can_interface")
+    arm_prefix = LaunchConfiguration("arm_prefix")
+
 
     # Configuration file paths
     controllers_file = PathJoinSubstitution(
-        [FindPackageShare(runtime_config_package), "config", "v10_controllers", "unimanual", "openarm_v10_controllers.yaml"]
+        [FindPackageShare(runtime_config_package), "config", "v10_controllers", controllers_file]
     )
+    print(controllers_file)
 
     # Robot description and control nodes spawner
     robot_description_spawner = OpaqueFunction(
         function=robot_spawner,
-        args=[description_package, description_file, arm_type, use_fake_hardware, controllers_file]
+        args=[description_package, description_file, arm_type, use_fake_hardware, controllers_file, can_interface, arm_prefix]
     )
-
     # RViz configuration
     rviz_config_file = PathJoinSubstitution(
         [FindPackageShare(description_package), "rviz", "robot_description.rviz"]
