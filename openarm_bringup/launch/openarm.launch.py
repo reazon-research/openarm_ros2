@@ -53,7 +53,7 @@ def generate_robot_description(context: LaunchContext, description_package, desc
         xacro_path,
         mappings={
             "arm_type": arm_type_str,
-            "bimanual": "false",  # Unimanual configuration
+            "bimanual": "false",
             "use_fake_hardware": use_fake_hardware_str,
             "ros2_control": "true",
             "can_interface": can_interface_str,
@@ -63,38 +63,37 @@ def generate_robot_description(context: LaunchContext, description_package, desc
 
     return robot_description
 
+def robot_nodes_spawner(context: LaunchContext, description_package, description_file,
+                       arm_type, use_fake_hardware, controllers_file, can_interface, arm_prefix):
+    """Spawn both robot state publisher and control nodes with shared robot description."""
 
-def robot_spawner(context: LaunchContext, description_package, description_file,
-                 arm_type, use_fake_hardware, controllers_file, can_interface, arm_prefix):
-    """Spawn robot description and control nodes."""
-
-    # Generate robot description
+    # Generate robot description once
     robot_description = generate_robot_description(
         context, description_package, description_file, arm_type, use_fake_hardware, can_interface, arm_prefix
     )
 
     # Get controllers file path
     controllers_file_str = context.perform_substitution(controllers_file)
-
     robot_description_param = {"robot_description": robot_description}
-
-    # Control node
-    control_node = Node(
-        package="controller_manager",
-        executable="ros2_control_node",
-        output="both",
-        parameters=[robot_description_param, controllers_file_str],
-    )
 
     # Robot state publisher node
     robot_state_pub_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
-        output="both",
+        name="robot_state_publisher",
+        output="screen",
         parameters=[robot_description_param],
     )
 
-    return [control_node, robot_state_pub_node]
+    # Control node
+    control_node = Node(
+            package="controller_manager",
+            executable="ros2_control_node",
+            output="both",
+            parameters=[robot_description_param, controllers_file_str],
+        )
+
+    return [robot_state_pub_node, control_node]
 
 
 def generate_launch_description():
@@ -146,12 +145,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "controllers_file",
             default_value="openarm_v10_controllers.yaml",
-            description="Controllers file to use.",
-        ),
-        DeclareLaunchArgument(
-            "bimanual",
-            default_value="false",
-            description="Bimanual configuration.",
+            description="Controllers file(s) to use. Can be a single file or comma-separated list of files.",
         ),
     ]
 
@@ -165,17 +159,14 @@ def generate_launch_description():
     controllers_file = LaunchConfiguration("controllers_file")
     can_interface = LaunchConfiguration("can_interface")
     arm_prefix = LaunchConfiguration("arm_prefix")
-
-
     # Configuration file paths
     controllers_file = PathJoinSubstitution(
         [FindPackageShare(runtime_config_package), "config", "v10_controllers", controllers_file]
     )
-    print(controllers_file)
 
-    # Robot description and control nodes spawner
-    robot_description_spawner = OpaqueFunction(
-        function=robot_spawner,
+    # Robot nodes spawner (both state publisher and control)
+    robot_nodes_spawner_func = OpaqueFunction(
+        function=robot_nodes_spawner,
         args=[description_package, description_file, arm_type, use_fake_hardware, controllers_file, can_interface, arm_prefix]
     )
     # RViz configuration
@@ -191,13 +182,14 @@ def generate_launch_description():
         arguments=["-d", rviz_config_file],
     )
 
-    # Controller spawners
+    # Joint state broadcaster spawner
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
     )
 
+    # Controller spawners
     robot_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
@@ -211,31 +203,28 @@ def generate_launch_description():
     )
 
     # Timing and sequencing
-    delay_joint_state_broadcaster = TimerAction(
-        period=3.0,
+    delayed_joint_state_broadcaster = TimerAction(
+        period=1.0,
         actions=[joint_state_broadcaster_spawner],
     )
 
-    delay_robot_controller = RegisterEventHandler(
-        event_handler=OnProcessExit(
-            target_action=joint_state_broadcaster_spawner,
-            on_exit=[robot_controller_spawner],
-        )
+    delayed_robot_controller = TimerAction(
+        period=1.0,
+        actions=[robot_controller_spawner],
     )
-
-    delay_gripper_controller = RegisterEventHandler(
-        event_handler=OnProcessExit(
-            target_action=robot_controller_spawner,
-            on_exit=[gripper_controller_spawner],
-        )
+    delayed_gripper_controller = TimerAction(
+        period=1.0,
+        actions=[gripper_controller_spawner],
     )
 
     return LaunchDescription(
         declared_arguments + [
-            robot_description_spawner,
+            robot_nodes_spawner_func,
             rviz_node,
-            delay_joint_state_broadcaster,
-            delay_robot_controller,
-            delay_gripper_controller,
+        ] +
+        [
+            delayed_joint_state_broadcaster,
+            delayed_robot_controller,
+            delayed_gripper_controller,
         ]
     )
