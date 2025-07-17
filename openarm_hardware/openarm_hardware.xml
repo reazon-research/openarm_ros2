@@ -15,11 +15,11 @@
 -->
 
 <library path="openarm_hardware">
-  <class name="openarm_hardware/OpenArmHW"
-         type="openarm_hardware::OpenArmHW"
+  <class name="openarm_hardware/OpenArmV10HW"
+         type="openarm_hardware::OpenArmV10HW"
          base_class_type="hardware_interface::SystemInterface">
     <description>
-      ros2_control hardware interface.
+      ros2_control hardware interface for OpenArm V10.
     </description>
   </class>
 </library>

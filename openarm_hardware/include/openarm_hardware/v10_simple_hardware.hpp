@@ -1,5 +1,4 @@
 // Copyright 2025 Reazon Holdings, Inc.
-// Copyright 2025 Stogl Robotics Consulting UG (haftungsbeschränkt)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,47 +15,31 @@
 #pragma once
 
 #include <memory>
+#include <openarm/can/socket/openarm.hpp>
+#include <openarm/damiao_motor/dm_motor_constants.hpp>
 #include <string>
 #include <vector>
 
-#include "canbus.hpp"
 #include "hardware_interface/handle.hpp"
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/system_interface.hpp"
 #include "hardware_interface/types/hardware_interface_return_values.hpp"
-#include "motor.hpp"
-#include "motor_control.hpp"
 #include "openarm_hardware/visibility_control.h"
 #include "rclcpp/macros.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 
 namespace openarm_hardware {
 
-std::vector<DM_Motor_Type> motor_types{
-    DM_Motor_Type::DM4340, DM_Motor_Type::DM4340, DM_Motor_Type::DM4340,
-    DM_Motor_Type::DM4340, DM_Motor_Type::DM4310, DM_Motor_Type::DM4310,
-    DM_Motor_Type::DM4310};
-std::vector<uint16_t> can_device_ids{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
-std::vector<uint16_t> can_master_ids{0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17};
-static const Control_Type CONTROL_MODE = Control_Type::MIT;
-static const std::size_t ARM_DOF = 7;
-static const std::size_t GRIPPER_DOF = 1;
-static const std::size_t TOTAL_DOF = ARM_DOF + GRIPPER_DOF;
-static const std::array<double, TOTAL_DOF> KP = {80.0, 80.0, 20.0, 55.0,
-                                                 5.0,  5.0,  5.0,  0.5};
-static const std::array<double, TOTAL_DOF> KD = {2.75, 2.5, 0.7, 0.4,
-                                                 0.7,  0.6, 0.5, 0.1};
-static const double START_POS_TOLERANCE_RAD = 0.1;
-static const double POS_JUMP_TOLERANCE_RAD = 3.1415 / 16.0;
-
-static const bool USING_GRIPPER = true;
-static const double GRIPPER_REFERENCE_GEAR_RADIUS_M = 0.00853;
-static const double GRIPPER_GEAR_DIRECTION_MULTIPLIER = -1.0;
-static const int GRIPPER_INDEX = TOTAL_DOF - 1;
-
-class OpenArmHW : public hardware_interface::SystemInterface {
+/**
+ * @brief Simplified OpenArm V10 Hardware Interface
+ *
+ * This is a simplified version that uses the OpenArm CAN API directly,
+ * following the pattern from full_arm.cpp example. Much simpler than
+ * the original implementation.
+ */
+class OpenArmV10HW : public hardware_interface::SystemInterface {
  public:
-  OpenArmHW();
+  OpenArmV10HW();
 
   TEMPLATES__ROS2_CONTROL__VISIBILITY_PUBLIC
   hardware_interface::CallbackReturn on_init(
@@ -90,21 +73,49 @@ class OpenArmHW : public hardware_interface::SystemInterface {
   hardware_interface::return_type write(
       const rclcpp::Time& time, const rclcpp::Duration& period) override;
 
-  std::size_t curr_dof = ARM_DOF;  // minus gripper
  private:
-  std::string prefix_;
-  std::unique_ptr<CANBus> canbus_;
-  std::unique_ptr<MotorControl> motor_control_;
-  std::vector<double> pos_commands_;
-  std::vector<double> pos_states_;
-  std::vector<double> vel_commands_;
-  std::vector<double> vel_states_;
-  std::vector<double> tau_ff_commands_;
-  std::vector<double> tau_states_;
-  std::vector<std::unique_ptr<Motor>> motors_;
+  // V10 default configuration
+  static constexpr size_t ARM_DOF = 7;
+  static constexpr bool ENABLE_GRIPPER = true;
 
-  void refresh_motors();
-  bool disable_torque_;
+  // Default motor configuration for V10
+  const std::vector<openarm::damiao_motor::DMMotorType> DEFAULT_MOTOR_TYPES = {
+      openarm::damiao_motor::DMMotorType::DM8009,  // Joint 1
+      openarm::damiao_motor::DMMotorType::DM8009,  // Joint 2
+      openarm::damiao_motor::DMMotorType::DM4340,  // Joint 3
+      openarm::damiao_motor::DMMotorType::DM4340,  // Joint 4
+      openarm::damiao_motor::DMMotorType::DM4310,  // Joint 5
+      openarm::damiao_motor::DMMotorType::DM4310,  // Joint 6
+      openarm::damiao_motor::DMMotorType::DM4310   // Joint 7
+  };
+
+  const std::vector<uint32_t> DEFAULT_SEND_CAN_IDS = {0x01, 0x02, 0x03, 0x04,
+                                                      0x05, 0x06, 0x07};
+  const std::vector<uint32_t> DEFAULT_RECV_CAN_IDS = {0x11, 0x12, 0x13, 0x14,
+                                                      0x15, 0x16, 0x17};
+
+  // Default gains
+  const std::vector<double> DEFAULT_KP = {5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0};
+  const std::vector<double> DEFAULT_KD = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+
+  // Configuration
+  std::string can_interface_;
+  bool enable_gripper_;
+
+  // OpenArm instance
+  std::unique_ptr<openarm::can::socket::OpenArm> openarm_;
+
+  // ROS2 control state and command vectors
+  std::vector<double> pos_commands_;
+  std::vector<double> vel_commands_;
+  std::vector<double> tau_commands_;
+  std::vector<double> pos_states_;
+  std::vector<double> vel_states_;
+  std::vector<double> tau_states_;
+
+  // Helper methods
+  void return_to_zero();
+  bool parse_config(const hardware_interface::HardwareInfo& info);
 };
 
 }  // namespace openarm_hardware

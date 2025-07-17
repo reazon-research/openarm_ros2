@@ -27,17 +27,21 @@ find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 
+# Find openarm_can library
+find_package(OpenArmCAN REQUIRED)
+
 add_library(${PROJECT_NAME} SHARED
-  src/openarm_hardware.cpp
-  src/canbus.cpp
-  src/motor.cpp
-  src/motor_control.cpp
+  src/v10_simple_hardware.cpp
 )
 
 target_include_directories(
   ${PROJECT_NAME}
   PRIVATE
   include
+)
+
+target_link_libraries(${PROJECT_NAME}
+  OpenArmCAN::openarm_can
 )
 
 ament_target_dependencies(${PROJECT_NAME}
@@ -53,7 +57,7 @@ install(
   TARGETS ${PROJECT_NAME}
   DESTINATION lib
   )
-  
+
 install(DIRECTORY include/
 DESTINATION include
 )
