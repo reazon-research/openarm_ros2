@@ -28,7 +28,6 @@
   <exec_depend>openarm_bringup</exec_depend>
   <exec_depend>openarm_description</exec_depend>
   <exec_depend>openarm_hardware</exec_depend>
-
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 

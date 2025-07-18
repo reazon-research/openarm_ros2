@@ -1,4 +1,5 @@
-# Copyright (c) 2024 Stogl Robotics Consulting UG (haftungsbeschränkt)
+# Copyright 2025 Enactic, Inc.
+# Copyright 2024 Stogl Robotics Consulting UG (haftungsbeschränkt)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,13 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#
-# Source of this file are templates in
-# [RosTeamWorkspace](https://github.com/StoglRobotics/ros_team_workspace) repository.
-#
-# Author: Dr. Denis
-#
-
 controller_manager:
   ros__parameters:
     update_rate: 100  # Hz
@@ -26,49 +20,61 @@ controller_manager:
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-    forward_position_controller:              
+    forward_position_controller:
       type: forward_command_controller/ForwardCommandController
 
-    forward_velocity_controller:              
+    forward_velocity_controller:
       type: forward_command_controller/ForwardCommandController
 
-    joint_trajectory_controller:              
+    joint_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
-forward_position_controller:                  
+    gripper_controller:
+      type: position_controllers/GripperActionController
+
+forward_position_controller:
   ros__parameters:
     joints:
-      - rev1
-      - rev2
-      - rev3
-      - rev4
-      - rev5
-      - rev6
-      - rev7
+      - openarm_joint1
+      - openarm_joint2
+      - openarm_joint3
+      - openarm_joint4
+      - openarm_joint5
+      - openarm_joint6
+      - openarm_joint7
     interface_name: position
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
 
-forward_velocity_controller:                  
+
+forward_velocity_controller:
   ros__parameters:
     joints:
-      - rev1
-      - rev2
-      - rev3
-      - rev4
-      - rev5
-      - rev6
-      - rev7
+      - openarm_joint1
+      - openarm_joint2
+      - openarm_joint3
+      - openarm_joint4
+      - openarm_joint5
+      - openarm_joint6
+      - openarm_joint7
     interface_name: velocity
+    command_interfaces:
+      - velocity
+    state_interfaces:
+      - velocity
 
-joint_trajectory_controller:                  
+joint_trajectory_controller:
   ros__parameters:
     joints:
-      - rev1
-      - rev2
-      - rev3
-      - rev4
-      - rev5
-      - rev6
-      - rev7
+      - openarm_joint1
+      - openarm_joint2
+      - openarm_joint3
+      - openarm_joint4
+      - openarm_joint5
+      - openarm_joint6
+      - openarm_joint7
 
     command_interfaces:
       - position
@@ -82,3 +88,12 @@ joint_trajectory_controller:
     constraints:
       stopped_velocity_tolerance: 0.01 # Defaults to 0.01
       goal_time: 0.0 # Defaults to 0.0 (start immediately)
+
+
+gripper_controller:
+  ros__parameters:
+    joint: openarm_finger_joint1
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
