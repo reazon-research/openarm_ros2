@@ -7,7 +7,7 @@ This package provides launch files to bring up the OpenArm robot system.
 Launch the OpenArm with v1.0 configuration and fake hardware:
 
 ```bash
-ros2 launch openarm_bringup openarm.launch.py arm_type:=v10 hardware_type:=real
+ros2 launch openarm_bringup openarm.launch.py arm_type:=v10 hardware_type:=mock
 ```
 
 ## Launch Files
