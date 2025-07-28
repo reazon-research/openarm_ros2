@@ -1,0 +1,42 @@
+# Copyright 2025 Enactic, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+moveit_setup_assistant_config:
+  urdf:
+    package: openarm_description
+    relative_path: urdf/robot/v10.urdf.xacro
+    xacro_args: bimanual:=true
+  srdf:
+    relative_path: config/openarm_bimanual.srdf
+  package_settings:
+    author_name: Enactic, Inc.
+    author_email: openarm_dev@enactic.ai
+    generated_timestamp: 1753031250
+  control_xacro:
+    command:
+      - position
+      - velocity
+    state:
+      - position
+      - velocity
+  modified_urdf:
+    xacros:
+      - control_xacro
+  control_xacro:
+    command:
+      - position
+      - velocity
+    state:
+      - position
+      - velocity

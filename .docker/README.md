@@ -18,7 +18,7 @@ Open the MuJoCo sim at
 
 ```sh
 . ~/ros2_ws/install/setup.bash && \
-ros2 launch -d openarm_bimanual_moveit_config demo.launch.py hardware_type:=sim
+ros2 launch openarm_bimanual_moveit_config demo.launch.py hardware_type:=mujoco
 ```
 
 # To build the latest image (v0.3)

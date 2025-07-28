@@ -7,7 +7,7 @@ This package provides launch files to bring up the OpenArm robot system.
 Launch the OpenArm with v1.0 configuration and fake hardware:
 
 ```bash
-ros2 launch openarm_bringup openarm.launch.py arm_type:=v10 use_fake_hardware:=true
+ros2 launch openarm_bringup openarm.launch.py arm_type:=v10 hardware_type:=mock
 ```
 
 ## Launch Files
@@ -18,7 +18,7 @@ ros2 launch openarm_bringup openarm.launch.py arm_type:=v10 use_fake_hardware:=t
 ## Key Parameters
 
 - `arm_type` - Arm type (default: v10)
-- `use_fake_hardware` - Use fake hardware instead of real hardware (default: false)
+- `hardware_type` - Use real/mock/mujoco hardware (default: real)
 - `can_interface` - CAN interface to use (default: can0)
 - `robot_controller` - Controller type: `joint_trajectory_controller` or `forward_position_controller`
 

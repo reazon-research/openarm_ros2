@@ -1,0 +1,27 @@
+# This file is used to configure the 3D sensors for the robot.
+# It is a placeholder for now. Configure the sensors to use the correct topics and parameters.
+sensors:
+  - default_sensor
+  - kinect_depthimage
+default_sensor:
+  far_clipping_plane_distance: 5.0
+  filtered_cloud_topic: filtered_cloud
+  image_topic: /head_mount_kinect/depth_registered/image_raw
+  max_update_rate: 1.0
+  near_clipping_plane_distance: 0.3
+  padding_offset: 0.03
+  padding_scale: 4.0
+  queue_size: 5
+  sensor_plugin: occupancy_map_monitor/DepthImageOctomapUpdater
+  shadow_threshold: 0.2
+kinect_depthimage:
+  far_clipping_plane_distance: 5.0
+  filtered_cloud_topic: filtered_cloud
+  image_topic: /head_mount_kinect/depth_registered/image_raw
+  max_update_rate: 1.0
+  near_clipping_plane_distance: 0.3
+  padding_offset: 0.03
+  padding_scale: 4.0
+  queue_size: 5
+  sensor_plugin: occupancy_map_monitor/DepthImageOctomapUpdater
+  shadow_threshold: 0.2
