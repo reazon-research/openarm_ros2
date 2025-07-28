@@ -149,7 +149,8 @@ def generate_launch_description():
             default_value="v10.urdf.xacro",
         ),
         DeclareLaunchArgument("arm_type", default_value="v10"),
-        DeclareLaunchArgument("hardware_type", default_value="real", description="Use real/mock/mujoco hardware."),
+        DeclareLaunchArgument("hardware_type", default_value="real",
+                              description="Use real/mock/mujoco hardware."),
         DeclareLaunchArgument(
             "robot_controller",
             default_value="joint_trajectory_controller",
